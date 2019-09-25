@@ -18,7 +18,7 @@ Mesh MeshBuilders::CreateSphere(double r)
         //除中心线外
         for (int i = 0; i < row; ++i) {
             if (i == 0) {
-                glm::vec3 vec(0, r, 0);
+                Vec3 vec(0, r, 0);
                 mesh.positions_[up_idx++] = Vec3(0, r, 0);
                 //注意 up_idx已经加一了
                 mesh.positions_[ver_count -up_idx] = Vec3(0, -r, 0);
@@ -43,20 +43,17 @@ Mesh MeshBuilders::CreateSphere(double r)
 
         for(int i=0; i < row;i++){
             int base_idx,base_idx_2;
-            int a,b,c,d;
+            unsigned a,b,c,d;
             if(i==0){
                 base_idx = 1;
                 for(int j=0;j<col;j++){
                     a = 0;
                     b = base_idx+j%col;
                     c = base_idx+(j+1)%col;
-                    mesh.faces_.push_back(a);
-                    mesh.faces_.push_back(b);
-                    mesh.faces_.push_back(c);
+                    mesh.faces_.push_back({a,b,c});
 
-                    mesh.faces_.push_back(ver_count -1-a);
-                    mesh.faces_.push_back(ver_count -1-c);
-                    mesh.faces_.push_back(ver_count -1-b);
+
+                    mesh.faces_.push_back({ver_count -1-a,ver_count -1-c,ver_count -1-b});
                 }
                 continue;
             }
@@ -76,12 +73,8 @@ Mesh MeshBuilders::CreateSphere(double r)
                 c = base_idx_2+j%col;
                 d = base_idx_2+(j+1)%col;
 
-                mesh.faces_.push_back(a);
-                mesh.faces_.push_back(c);
-                mesh.faces_.push_back(d);
-                mesh.faces_.push_back(a);
-                mesh.faces_.push_back(d);
-                mesh.faces_.push_back(b);
+                mesh.faces_.push_back({a,c,b});
+                mesh.faces_.push_back({a,d,b});
 
                 if(i!=row-1){
                 /*
@@ -91,12 +84,8 @@ Mesh MeshBuilders::CreateSphere(double r)
                  * |  \|       |  \ |
                  * c---d      -a-- -b
                  */
-                    mesh.faces_.push_back(ver_count -1-c);
-                    mesh.faces_.push_back(ver_count -1-a);
-                    mesh.faces_.push_back(ver_count -1-b);
-                    mesh.faces_.push_back(ver_count -1-c);
-                    mesh.faces_.push_back(ver_count -1-b);
-                    mesh.faces_.push_back(ver_count -1-d);
+                    mesh.faces_.push_back({ver_count -1-c,ver_count -1-a,ver_count -1-b});
+                    mesh.faces_.push_back({ver_count -1-c,ver_count -1-b,ver_count -1-d});
                 }
                 else{
                 /*
@@ -106,12 +95,8 @@ Mesh MeshBuilders::CreateSphere(double r)
                  * |  \|       |  \ |
                  * c---d      -a-- -b
                  */
-                    mesh.faces_.push_back(c);
-                    mesh.faces_.push_back(ver_count -1-a);
-                    mesh.faces_.push_back(ver_count -1-b);
-                    mesh.faces_.push_back(c);
-                    mesh.faces_.push_back(ver_count -1-b);
-                    mesh.faces_.push_back(d);
+                    mesh.faces_.push_back({c,ver_count -1-a,ver_count -1-b});
+                    mesh.faces_.push_back({c,ver_count -1-b,d});
                 }
             }
         }

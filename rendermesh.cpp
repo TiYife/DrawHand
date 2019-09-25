@@ -68,19 +68,18 @@ void RenderMesh::draw(QOpenGLShaderProgram * program)
 
 void RenderMesh::update()
 {
-    if(!mesh_)
-        return;
-    QVector3D p,n;
-    QVector2D t;
-    for(size_t i = 0; i < mesh_->positions_.size();i++){
-        p = QVector3D(mesh_->positions_[i].x(), mesh_->positions_[i].y(), mesh_->positions_[i].z());
-        n = QVector3D(mesh_->normals_[i].x(), mesh_->normals_[i].y(), mesh_->normals_[i].z());
-        t = QVector2D(mesh_->texcoords_[i].x(), mesh_->texcoords_[i].y());
-        vertices_.push_back({p,n,t});
-//        vertices_.push_back({mesh_->positions_[i], mesh_->normals_[i], mesh_->texcoords_[i]});
-    }
+//    if(!mesh_)
+//        return;
+//    QVector3D p,n;
+//    QVector2D t;
+//    for(size_t i = 0; i < mesh_->positions_.size();i++){
+//        p = QVector3D(mesh_->positions_[i].x(), mesh_->positions_[i].y(), mesh_->positions_[i].z());
+//        n = QVector3D(mesh_->normals_[i].x(), mesh_->normals_[i].y(), mesh_->normals_[i].z());
+//        t = QVector2D(mesh_->texcoords_[i].x(), mesh_->texcoords_[i].y());
+//        vertices_.push_back({p,n,t});
+//    }
 
-   /*
+
     if(!mesh_)
         return;
     QVector3D p,n;
@@ -93,8 +92,8 @@ void RenderMesh::update()
         p = QVector3D(position.x(), position.y(), position.z());
         n = QVector3D(normal.x(), normal.y(), normal.z());
         t = QVector2D(mesh_->texcoords_[i].x(), mesh_->texcoords_[i].y());
+        std::cout<<position.x()<<" "<<position.y()<<" "<<position.z()<<std::endl;
         vertices_.push_back({p,n,t});
-//        vertices_.push_back({mesh_->positions_[i], mesh_->normals_[i], mesh_->texcoords_[i]});
     }
-*/
+
 }

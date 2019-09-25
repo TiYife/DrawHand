@@ -13,6 +13,9 @@
 #define Quat Eigen::Quaterniond
 #define real_t double
 
+#define M_PI 3.141592653579
+#define M_PI_2 M_PI*M_PI
+
 struct Face
 {
     unsigned v0, v1, v2;

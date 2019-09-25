@@ -5,7 +5,11 @@
 class Transform
 {
 public:
-    Transform(){};
+    Transform(){
+        quat_ = Eigen::Quaterniond (1,0,0,0);
+        pos_ = Vec3(0,0,0);
+    };
+
     Transform(const Quat & q, const Vec3 & p){
         quat_ = q;
         pos_ = p;
