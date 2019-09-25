@@ -208,6 +208,6 @@ void Panel::paintGL()
 }
 
 
-void Panel::setMesh(DynamicMesh * mesh){
+void Panel::setMesh(Mesh * mesh){
     meshes_.push_back(new RenderMesh(mesh));
 }

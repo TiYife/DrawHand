@@ -1,7 +1,7 @@
 #ifndef RENDERMESH_H
 #define RENDERMESH_H
 
-#include "dynamicmesh.h"
+#include "mesh.h"
 #include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLBuffer>
@@ -17,7 +17,7 @@ struct RenderVertex{
 class RenderMesh: protected QOpenGLFunctions
 {
 public:
-    RenderMesh(DynamicMesh * mesh);
+    RenderMesh(Mesh * mesh);
     virtual ~RenderMesh();
 
     void initialize();
@@ -26,7 +26,7 @@ public:
     void update();
 
 private:
-    DynamicMesh * mesh_;
+    Mesh * mesh_;
     std::vector<RenderVertex> vertices_;
     QOpenGLBuffer arrayBuffer;
     QOpenGLBuffer indexBuffer;

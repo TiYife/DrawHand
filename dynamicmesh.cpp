@@ -8,9 +8,9 @@ DynamicMesh::DynamicMesh()
 DynamicMesh::DynamicMesh(Mesh *obj)
 {
 //    this->faces_ = obj->faces_;
-    for(int i = 0;i<obj->vertices_.size();i++){
+    for(int i = 0;i<obj->positions_.size();i++){
 //        this->vertices_.push_back({obj->vertices_[i], obj->normals_[i],obj->UVs_[i]});
-        this->vertices_.push_back({obj->vertices_[i], obj->vertices_[i] ,obj->UVs_[i]});
+        this->vertices_.push_back({obj->positions_[i], obj->positions_[i] ,obj->texcoords_[i]});
 
     }
 

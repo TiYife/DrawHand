@@ -25,16 +25,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-    dynamicmesh.cpp \
     rendermesh.cpp \
     panel.cpp \
     mainwindow.cpp \
-    dynamicmesh.cpp \
     main.cpp \
     mainwindow.cpp \
     panel.cpp \
     rendermesh.cpp \
-    dynamicmesh.cpp \
     main.cpp \
     mainwindow.cpp \
     panel.cpp \
@@ -43,20 +40,17 @@ SOURCES += \
     mesh.cpp
 
 HEADERS += \
-    dynamicmesh.h \
     commontype.h \
     rendermesh.h \
     panel.h \
     mainwindow.h \
     fileutil.h \
     commontype.h \
-    dynamicmesh.h \
     fileutil.h \
     mainwindow.h \
     panel.h \
     rendermesh.h \
     commontype.h \
-    dynamicmesh.h \
     fileutil.h \
     mainwindow.h \
     panel.h \

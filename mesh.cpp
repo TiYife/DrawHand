@@ -10,27 +10,27 @@ Mesh::Mesh(std::string name)
     this->name_ = name;
 }
 
-Mesh::Mesh(const Mesh * obj)
+Mesh::Mesh(const Mesh * mesh)
 {
-    this->name_ = obj->name_;
-    this->vertices_ = obj->vertices_;
-    this->normals_ = obj->normals_;
-    this->UVs_ = obj->UVs_;
-    this->faces_ = obj->faces_;
+    this->name_ = mesh->name_;
+    this->positions_ = mesh->positions_;
+    this->normals_ = mesh->normals_;
+    this->texcoords_ = mesh->texcoords_;
+    this->faces_ = mesh->faces_;
 }
 
 
 Mesh::~Mesh()
 {
     faces_.clear();
-    UVs_.clear();
+    texcoords_.clear();
     normals_.clear();
-    vertices_.clear();
+    positions_.clear();
 }
 
-void Mesh::Update(std::vector<Eigen::Vector3d> p, std::vector<Eigen::Vector3d> n)
+void Mesh::Update(std::vector<Vec3> p, std::vector<Vec3> n)
 {
-    this->vertices_ = p;
+    this->positions_ = p;
     this->normals_ = n;
 }
 
@@ -47,15 +47,15 @@ Mesh Mesh::operator*(const Eigen::Isometry3d& t)
     return this->Transfrom(t);
 }
 
-void Mesh::operator+=(const Mesh & obj)
+void Mesh::operator+=(const Mesh & mesh)
 {
-    this->vertices_.insert(vertices_.end(), obj.vertices_.begin(), obj.vertices_.end());
-    this->normals_.insert(normals_.end(), obj.normals_.begin(), obj.normals_.end());
-    this->UVs_.insert(UVs_.end(), obj.UVs_.begin(), obj.UVs_.end());
-    int size = this->vertices_.size();
-    for (auto& f : obj.faces_) {
-        faces_.push_back({ static_cast<unsigned short>(f.v0 + size), static_cast<unsigned short>(f.v1 + size),
-                           static_cast<unsigned short>(f.v2 + size) });
+    this->positions_.insert(positions_.end(), mesh.positions_.begin(), mesh.positions_.end());
+    this->normals_.insert(normals_.end(), mesh.normals_.begin(), mesh.normals_.end());
+    this->texcoords_.insert(texcoords_.end(), mesh.texcoords_.begin(), mesh.texcoords_.end());
+    size_t size = this->positions_.size();
+    for (auto& f : mesh.faces_) {
+        faces_.push_back({ static_cast<unsigned>(f.v0 + size), static_cast<unsigned>(f.v1 + size),
+                           static_cast<unsigned>(f.v2 + size) });
     }
 }
 
@@ -74,19 +74,19 @@ void Mesh::SetMtlFile(std::string path)
     mtl_file_path_ = path;
 }
 
-void Mesh::AddVertice(Eigen::Vector3d v)
+void Mesh::AddVertice(Vec3 v)
 {
-    vertices_.push_back(v);
+    positions_.push_back(v);
 }
 
-void Mesh::AddNormal(Eigen::Vector3d n)
+void Mesh::AddNormal(Vec3 n)
 {
     normals_.push_back(n);
 }
 
 void Mesh::AddUV(const Vec2 & uv)
 {
-    UVs_.push_back(uv);
+    texcoords_.push_back(uv);
 }
 
 void Mesh::AddFace(Face f)
@@ -109,19 +109,19 @@ const std::string & Mesh::GetMtlFilePath()
     return mtl_file_path_;
 }
 
-const std::vector<Eigen::Vector3d>& Mesh::GetVertices()
+const std::vector<Vec3>& Mesh::GetVertices()
 {
-    return vertices_;
+    return positions_;
 }
 
-const std::vector<Eigen::Vector3d>& Mesh::GetNormals()
+const std::vector<Vec3>& Mesh::GetNormals()
 {
     return normals_;
 }
 
 const std::vector<Vec2>& Mesh::GetUVs()
 {
-    return UVs_;
+    return texcoords_;
 }
 
 const std::vector<Face>& Mesh::GetFaces()
@@ -130,7 +130,7 @@ const std::vector<Face>& Mesh::GetFaces()
 }
 
 std::vector<int> Mesh::FindUselessVertices() {
-    std::vector<int> list(vertices_.size(), 1);
+    std::vector<int> list(positions_.size(), 1);
     std::vector<int> res;
     for (auto& f : faces_) {
         list[f.v0 - 1] = 0;
@@ -145,11 +145,11 @@ std::vector<int> Mesh::FindUselessVertices() {
     return res;
 }
 
-std::vector<int> Mesh::FindLostIndices(Mesh obj)
+std::vector<int> Mesh::FindLostIndices(Mesh mesh)
 {
     std::vector<int> list;
-    for(int i = 0; i < this->vertices_.size();i++){
-        if(std::find(obj.vertices_.begin(), obj.vertices_.end(), vertices_[i])==obj.vertices_.end()){
+    for(int i = 0; i < this->positions_.size();i++){
+        if(std::find(mesh.positions_.begin(), mesh.positions_.end(), positions_[i])==mesh.positions_.end()){
             list.push_back(i+1);
         }
     }
@@ -160,43 +160,94 @@ std::vector<int> Mesh::FindLostIndices(Mesh obj)
 
 Mesh Mesh::Transfrom(const Eigen::Isometry3d& t)
 {
-    Mesh obj(this->name_);
-    obj.faces_ = this->faces_;
-    obj.UVs_ = this->UVs_;
-    for (auto& p : vertices_) {
-        obj.vertices_.push_back(t * p);
+    Mesh mesh(this->name_);
+    mesh.faces_ = this->faces_;
+    mesh.texcoords_ = this->texcoords_;
+    for (auto& p : positions_) {
+        mesh.positions_.push_back(t * p);
     }
 
     for (auto& n : normals_) {
-        obj.normals_.push_back(t * n);
+        mesh.normals_.push_back(t * n);
     }
-    return obj;
+    return mesh;
 }
 
-ObjUnion::ObjUnion()
+float CalcAngleBetween(const Vec3 &dir_a, const Vec3 &dir_b) {
+    float length_dot = dir_a.norm() * dir_b.norm();
+
+    if (length_dot < 0.0001f) {
+        length_dot = 0.0001f;
+    }
+    float f = dir_a.dot(dir_b) / length_dot;
+    f = f < -1.0 ? -1.0 : (f > 1.0 ? 1.0 : f);
+
+    return acosf(f);
+}
+
+
+void Mesh::CalculateNormal()
+{
+    for(auto & n : normals_){
+        n=Vec3(0);
+    }
+    Vec3 pos[3];
+    Vec3 dir10,dir20;
+    Vec3 norm;
+
+    for(int i = 0;i < faces_.size()/3;i++ ){
+        pos[0] = positions_[faces_[i].v0];
+        pos[1] = positions_[faces_[i].v1];
+        pos[2] = positions_[faces_[i].v2];
+
+        dir10 = pos[1] - pos[0];
+        dir20 = pos[2] - pos[0];
+
+        norm = dir20.cross(dir10);
+//        std::cout<<"norm:\t"<<norm.x<<"\t"<<norm.y<<"\t"<<norm.z<<"\n";
+
+        for (int j = 0; j < 3; j++) {
+            // weight by angle to fix the L-Shape problem
+            float weight = CalcAngleBetween(pos[(j + 1) % 3] - pos[j], pos[(j + 2) % 3] - pos[j]);
+            if (weight <= 0.0f) {
+                weight = 0.0001f;
+            }
+//            std::cout<<"weight_"<<faces_[3*i+j]<<":\t"<<weight<<"\t";
+            if(j == 0)
+                normals_[faces_[i].v0] += norm * weight;
+            else if(j == 1)
+                normals_[faces_[i].v1] += norm * weight;
+            else
+                normals_[faces_[i].v2] += norm * weight;
+        }
+//        std::cout<<"\n";
+    }
+}
+
+MeshUnion::MeshUnion()
 {
     clear();
 }
 
-ObjUnion::~ObjUnion()
+MeshUnion::~MeshUnion()
 {
     clear();
 }
 
-void ObjUnion::operator+=(const Mesh & obj)
+void MeshUnion::operator+=(const Mesh & mesh)
 {
-    Mesh new_obj = obj;
+    Mesh new_mesh = mesh;
 
-    for (auto &i : new_obj.faces_) {
+    for (auto &i : new_mesh.faces_) {
         i.v0 += this->maxFaceId;
         i.v1 += this->maxFaceId;
         i.v2 += this->maxFaceId;
     }
-    maxFaceId += obj.vertices_.size();
-    objs.push_back(new_obj);
+    maxFaceId += mesh.positions_.size();
+    meshes.push_back(new_mesh);
 }
 
-void ObjUnion::clear()
+void MeshUnion::clear()
 {
-    objs.clear();
+    meshes.clear();
 }

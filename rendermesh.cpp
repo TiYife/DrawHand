@@ -1,6 +1,6 @@
 #include "rendermesh.h"
 
-RenderMesh::RenderMesh(DynamicMesh *mesh):
+RenderMesh::RenderMesh(Mesh *mesh):
     mesh_(mesh),
     indexBuffer(QOpenGLBuffer::IndexBuffer)
 {
@@ -57,7 +57,7 @@ void RenderMesh::draw(QOpenGLShaderProgram * program)
     program -> enableAttributeArray(texcoord_location);
     program -> setAttributeBuffer(texcoord_location, GL_FLOAT, offset, 2, sizeof(RenderVertex));
 
-    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mesh_->faces_.size() * sizeof(Face)), GL_UNSIGNED_SHORT, 0);
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mesh_->faces_.size() * sizeof(Face)), GL_UNSIGNED_INT, 0);
 }
 
 void RenderMesh::update()
@@ -66,10 +66,11 @@ void RenderMesh::update()
         return;
     QVector3D p,n;
     QVector2D t;
-    for(auto & v: mesh_->vertices_){
-        p = QVector3D(v.position.x(), v.position.y(), v.position.z());
-        n = QVector3D(v.normal.x(), v.normal.y(), v.normal.z());
-        t = QVector2D(v.texcoord.x(), v.texcoord.y());
+    for(size_t i = 0; i < mesh_->positions_.size();i++){
+        p = QVector3D(mesh_->positions_[i].x(), mesh_->positions_[i].y(), mesh_->positions_[i].z());
+        n = QVector3D(mesh_->normals_[i].x(), mesh_->normals_[i].y(), mesh_->normals_[i].z());
+        t = QVector2D(mesh_->texcoords_[i].x(), mesh_->texcoords_[i].y());
         vertices_.push_back({p,n,t});
+//        vertices_.push_back({mesh_->positions_[i], mesh_->normals_[i], mesh_->texcoords_[i]});
     }
 }

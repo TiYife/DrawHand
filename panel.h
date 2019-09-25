@@ -19,7 +19,7 @@ public:
     explicit Panel(QWidget *parent = 0);
     ~Panel();
 
-    void setMesh(DynamicMesh * mesh);
+    void setMesh(Mesh * mesh);
 protected:
     void mousePressEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;

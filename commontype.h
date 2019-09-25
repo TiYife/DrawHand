@@ -14,7 +14,7 @@
 
 struct Face
 {
-    unsigned short v0, v1, v2;
+    unsigned v0, v1, v2;
 };
 
 struct Pose
