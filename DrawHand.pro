@@ -37,25 +37,26 @@ SOURCES += \
     panel.cpp \
     rendermesh.cpp \
     fileutil.cpp \
-    mesh.cpp
+    mesh.cpp \
+    meshbuilders.cpp
 
 HEADERS += \
-    commontype.h \
     rendermesh.h \
     panel.h \
     mainwindow.h \
     fileutil.h \
-    commontype.h \
     fileutil.h \
     mainwindow.h \
     panel.h \
     rendermesh.h \
-    commontype.h \
     fileutil.h \
     mainwindow.h \
     panel.h \
     rendermesh.h \
-    mesh.h
+    mesh.h \
+    meshbuilders.h \
+    transform.h \
+    commontype.h
 
 FORMS += \
         mainwindow.ui

@@ -1,8 +1,8 @@
 #include "fileutil.h"
 using namespace std;
 
-Mesh FileUtil::LoadObj(std::string filename, std::string objname) {
-    Mesh obj;
+Mesh * FileUtil::LoadObj(std::string filename, std::string objname) {
+    Mesh *mesh;
     string line, tag;
     float x, y, z;
     string sa, sb, sc;
@@ -13,7 +13,7 @@ Mesh FileUtil::LoadObj(std::string filename, std::string objname) {
 
     ifstream in(filename);
     if (in) {
-        obj = new Mesh(objname);
+        mesh = new Mesh(objname);
     }
     while (getline(in, line))
     {
@@ -21,16 +21,16 @@ Mesh FileUtil::LoadObj(std::string filename, std::string objname) {
         ss >> tag;
         if (tag == "v") {
             ss >> x >> y >> z;
-            obj.AddVertice(Vec3(x, y, z));
+            mesh ->AddVertice(Vec3(x, y, z));
             num_v++;
         }
         else if (tag == "vn") {
             ss >> x >> y >> z;
-            obj.AddNormal(Vec3(x, y, z));
+            mesh ->AddNormal(Vec3(x, y, z));
         }
         else if (tag == "vt") {
             ss >> x >> y;
-            obj.AddUV({ x, y });
+            mesh ->AddUV({ x, y });
         }
         else if (tag == "f") {
             ss >> sa >> sb >> sc;
@@ -45,15 +45,15 @@ Mesh FileUtil::LoadObj(std::string filename, std::string objname) {
                 c = c * 10 + sc[i] - '0';
             }
             //a = stoi(sa);  b = stoi(sb);  c = stoi(sc);
-            obj.AddFace({ a - 1u, b - 1u, c - 1u });
+            mesh ->AddFace({ a - 1u, b - 1u, c - 1u });
         }
         else if (tag == "mtllib") {
             ss >> mtl_file_path;
-            obj.SetMtlFile(mtl_file_path);
+            mesh ->SetMtlFile(mtl_file_path);
         }
         else if (tag == "usemtl") {
             ss >> mtl_name;
-            obj.SetMtl(mtl_name);
+            mesh ->SetMtl(mtl_name);
         }
         else if (tag == "g") {
             ss >> group_name;//todo
@@ -61,10 +61,10 @@ Mesh FileUtil::LoadObj(std::string filename, std::string objname) {
         tag = "";
     }
     in.close();
-    return obj;
+    return mesh;
 }
 
-Mesh FileUtil::LoadObj(QString filename)
+Mesh * FileUtil::LoadObj(QString filename)
 {
 //    QFile f(filename);
 
@@ -153,8 +153,8 @@ Mesh FileUtil::LoadObj(QString filename)
 //    WriteObjUnion(filename, objUnion);
 //}
 
-vector<Pose> FileUtil::ReadPose(string filename) {
-    vector<Pose> poses;
+vector<Transform> FileUtil::ReadPose(string filename) {
+    vector<Transform> poses;
     int i;
     double a, b, c;
     double x, y, z, w;

@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include "commontype.h"
+#include "transform.h"
 
 class Mesh
 {
@@ -15,8 +15,8 @@ public:
 
     void Update(std::vector<Vec3> p, std::vector<Vec3> n);
 
-    Mesh Transfrom(const Pose& p);
-    Mesh operator * (const Eigen::Isometry3d& t);
+    Mesh Transfrom(Transform t);
+    Mesh operator * (Transform t);
     void operator +=(const Mesh& mesh);
 
     void SetName(std::string name);
@@ -52,6 +52,7 @@ public:
     std::vector<Vec3> positions_;
     std::vector<Vec3> normals_;
     std::vector<Vec2> texcoords_;
+    Transform transform_;
     std::string name_, mtl_file_path_, mtl_name_;
 };
 

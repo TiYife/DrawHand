@@ -34,15 +34,27 @@ void Mesh::Update(std::vector<Vec3> p, std::vector<Vec3> n)
     this->normals_ = n;
 }
 
-Mesh Mesh::Transfrom(const Pose& p)
+Mesh Mesh::Transfrom(Transform t)
 {
-    Eigen::Isometry3d T = Eigen::Isometry3d::Identity();
-    T.rotate(p.q.toRotationMatrix());
-    T.pretranslate(p.p);
-    return this->Transfrom(T);
+//    Eigen::Isometry3d T = Eigen::Isometry3d::Identity();
+//    T.rotate(p.quat_.toRotationMatrix());
+//    T.pretranslate(p.pos_);
+//    return this->Transfrom(T);
+
+    Mesh mesh(this->name_);
+    mesh.faces_ = this->faces_;
+    mesh.texcoords_ = this->texcoords_;
+    for (auto& p : positions_) {
+        mesh.positions_.push_back(t * p);
+    }
+
+    for (auto& n : normals_) {
+        mesh.normals_.push_back(t * n);
+    }
+    return mesh;
 }
 
-Mesh Mesh::operator*(const Eigen::Isometry3d& t)
+Mesh Mesh::operator*(Transform t)
 {
     return this->Transfrom(t);
 }

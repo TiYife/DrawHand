@@ -21,12 +21,7 @@ void RenderMesh::initialize()
     //todo init faces and vertexes
 
     update();
-    for(auto& v: vertices_){
-        std::cout<<v.position.x()<<" "<<v.position.y()<<" "<<v.position.z()<<std::endl;
-    }
-    for(auto & f : mesh_->faces_){
-        std::cout<<f.v0<<" "<<f.v1<<" "<<f.v2<<std::endl;
-    }
+
     arrayBuffer.bind();
     arrayBuffer.allocate(&vertices_[0], static_cast<int>(vertices_.size() * sizeof(RenderVertex)));
 
@@ -57,6 +52,17 @@ void RenderMesh::draw(QOpenGLShaderProgram * program)
     program -> enableAttributeArray(texcoord_location);
     program -> setAttributeBuffer(texcoord_location, GL_FLOAT, offset, 2, sizeof(RenderVertex));
 
+//    for(auto& v: vertices_){
+//        std::cout<<v.position.x()<<" "<<v.position.y()<<" "<<v.position.z()<<std::endl;
+//    }
+//    if(mesh_!=nullptr){
+//        for(auto & f : mesh_->faces_){
+//            std::cout<<f.v0<<" "<<f.v1<<" "<<f.v2<<std::endl;
+//        }
+
+//    }
+
+
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mesh_->faces_.size() * sizeof(Face)), GL_UNSIGNED_INT, 0);
 }
 
@@ -73,4 +79,22 @@ void RenderMesh::update()
         vertices_.push_back({p,n,t});
 //        vertices_.push_back({mesh_->positions_[i], mesh_->normals_[i], mesh_->texcoords_[i]});
     }
+
+   /*
+    if(!mesh_)
+        return;
+    QVector3D p,n;
+    QVector2D t;
+    Vec3 position, normal;
+
+    for(size_t i = 0; i < mesh_->positions_.size();i++){
+        position = mesh_->transform_ * mesh_->positions_[i];
+        normal = mesh_->transform_ * mesh_->normals_[i];
+        p = QVector3D(position.x(), position.y(), position.z());
+        n = QVector3D(normal.x(), normal.y(), normal.z());
+        t = QVector2D(mesh_->texcoords_[i].x(), mesh_->texcoords_[i].y());
+        vertices_.push_back({p,n,t});
+//        vertices_.push_back({mesh_->positions_[i], mesh_->normals_[i], mesh_->texcoords_[i]});
+    }
+*/
 }

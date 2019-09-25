@@ -11,16 +11,11 @@
 #define Vec3 Eigen::Vector3d
 #define Vec2 Eigen::Vector2d
 #define Quat Eigen::Quaterniond
+#define real_t double
 
 struct Face
 {
     unsigned v0, v1, v2;
-};
-
-struct Pose
-{
-    Quat q;
-    Vec3 p;
 };
 
 struct Vertex
@@ -29,5 +24,6 @@ struct Vertex
     Vec3 normal;
     Vec2 texcoord;
 };
+
 
 #endif // COMMONTYPE_H

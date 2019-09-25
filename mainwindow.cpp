@@ -310,9 +310,9 @@ void MainWindow::loadFile(const QString &fileName)
 {
 //    std::string s = fileName.toLocal8Bit().constData();
     QString s = fileName;
-    Mesh mesh = FileUtil::LoadObj(s.toStdString(), "");
+    Mesh * mesh = FileUtil::LoadObj(s.toStdString(), "");
 
-    panel->setMesh(&mesh);
+    panel->setMesh(mesh);
 //    QFile file(fileName);
 //    if (!file.open(QFile::ReadOnly | QFile::Text)) {
 //        QMessageBox::warning(this, tr("SDI"),
