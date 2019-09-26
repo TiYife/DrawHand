@@ -9,10 +9,10 @@ Panel::Panel(QWidget *parent) :
     texture_(0),
     angular_speed_(0),
     press(false),
-    scale_(0.05),
+    scale_(0.01),
     offset_x_(0),
-    offset_y_(0),
-    offset_z_(-5.0),
+    offset_y_(1.6),
+    offset_z_(-5),
     hand_mesh_(0)
 {
     this->grabKeyboard();
@@ -26,9 +26,7 @@ Panel::~Panel()
     doneCurrent();
     delete texture_;
     delete hand_mesh_;
-
-    for(auto it = meshes_.rbegin(); it!=meshes_.rend();it++)
-        delete *it;
+    clearAuxiliaryMeshes();
 
 }
 
@@ -143,20 +141,26 @@ void Panel::initializeGL()
 void Panel::initShaders()
 {
     // Compile vertex shader
-    if (!program_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/vshader.vert"))
+    if (!hand_program_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/hand.vert"))
         close();
-
     // Compile fragment shader
-    if (!program_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/fshader.frag"))
+    if (!hand_program_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/hand.frag"))
         close();
-
     // Link shader pipeline
-    if (!program_.link())
+    if (!hand_program_.link())
         close();
 
-    // Bind shader pipeline for use
-    if (!program_.bind())
+
+    if (!default_program_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/default.vert"))
         close();
+    // Compile fragment shader
+    if (!default_program_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/default.frag"))
+        close();
+    // Link shader pipeline
+    if (!default_program_.link())
+        close();
+
+
 }
 
 void Panel::initTextures()
@@ -173,6 +177,30 @@ void Panel::initTextures()
     // Wrap texture coordinates by repeating
     // f.ex. texture coordinate (1.1, 1.2) is same as (0.1, 0.2)
     texture_->setWrapMode(QOpenGLTexture::Repeat);
+}
+
+void Panel::clearAuxiliaryMeshes()
+{
+    for(auto it = auxiliary_meshes_.begin(); it!=auxiliary_meshes_.end();){
+        it = auxiliary_meshes_.erase(it);
+    }
+}
+
+void Panel::updateAuxiliaryMeshes()
+{
+    for(auto & indices : hand_key_indices){
+        Vec3 pos = Vec3(0,0,0);
+        for(auto& i: indices){
+            //todo mesh_
+            pos+=hand_mesh_->mesh_->positions_[i];
+
+        }
+        pos/=indices.size();
+    //    Vec3 pos = Vec3(-43, -120, -0.7);
+
+        auxiliary_meshes_.push_back(new RenderMesh(MeshBuilders::CreateSphere(pos, 10)));
+    }
+
 }
 
 void Panel::resizeGL(int w, int h)
@@ -195,7 +223,7 @@ void Panel::paintGL()
     // Clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    texture_->bind();
+
 
     // Calculate model view transformation
     QMatrix4x4 matrix;
@@ -204,42 +232,52 @@ void Panel::paintGL()
     matrix.scale(scale_);
 
     // Set modelview-projection matrix
-    program_.setUniformValue("mvp_matrix", projection_ * matrix);
+    if(hand_mesh_){
+        texture_->bind();
+        // Bind shader pipeline for use
+        if (!hand_program_.bind())
+            close();
+        hand_program_.setUniformValue("mvp_matrix", projection_ * matrix);
+        hand_program_.setUniformValue("texture", 0);
+        hand_mesh_->draw(&hand_program_);
+    }
 
-    // Use texture unit 0 which contains cube.png
-    program_.setUniformValue("texture", 0);
 
-    // Draw cube geometry
-    for(auto& mesh_:meshes_)
-        mesh_->draw(&program_);
-    if(hand_mesh_)
-        hand_mesh_->draw(&program_);
+    if(auxiliary_meshes_.size()!=0){
+        // Bind shader pipeline for use
+        if (!default_program_.bind())
+            close();
+
+        // Use texture unit 0 which contains cube.png
+        default_program_.setUniformValue("mvp_matrix", projection_ * matrix);
+        default_program_.setUniformValue("texture", 0);
+
+
+        // Draw cube geometry
+        for(auto& mesh_:auxiliary_meshes_)
+            mesh_->draw(&default_program_);
+    }
+
+
 }
 
 
 void Panel::addMesh(Mesh * mesh){
-    meshes_.push_back(new RenderMesh(mesh));
+    auxiliary_meshes_.push_back(new RenderMesh(mesh));
 }
 
 void Panel::setHandMesh(Mesh *mesh)
 {
-    if(hand_mesh_!=nullptr)
+    if(hand_mesh_!=nullptr){
         delete hand_mesh_;
+        clearAuxiliaryMeshes();
+    }
     hand_mesh_ = new RenderMesh(mesh);
+    updateAuxiliaryMeshes();
 }
 
 void Panel::addKeyIndices(const std::vector<int> &indices)
 {
     hand_key_indices.push_back(indices);
-
-    Vec3 pos = Vec3(0,0,0);
-    for(auto& i: indices){
-        //todo mesh_
-        pos+=hand_mesh_->mesh_->positions_[i];
-
-    }
-    pos/=indices.size();
-
-    meshes_.push_back(new RenderMesh(MeshBuilders::CreateSphere(pos, 1.0)));
-
+    updateAuxiliaryMeshes();
 }

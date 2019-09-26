@@ -37,11 +37,16 @@ protected:
     void initShaders();
     void initTextures();
 
+private:
+    void clearAuxiliaryMeshes();
+    void updateAuxiliaryMeshes();
+
 
 
 private:
     QBasicTimer timer_;
-    QOpenGLShaderProgram program_;
+    QOpenGLShaderProgram hand_program_;
+    QOpenGLShaderProgram default_program_;
 
     QOpenGLTexture * texture_;
 
@@ -56,7 +61,7 @@ private:
     bool press;
 
     RenderMesh * hand_mesh_;
-    std::vector<RenderMesh *> meshes_;
+    std::vector<RenderMesh *> auxiliary_meshes_;
     std::vector<std::vector<int>> hand_key_indices;
 
 };
