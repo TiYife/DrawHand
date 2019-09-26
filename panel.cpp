@@ -198,7 +198,7 @@ void Panel::updateAuxiliaryMeshes()
         pos/=indices.size();
     //    Vec3 pos = Vec3(-43, -120, -0.7);
 
-        auxiliary_meshes_.push_back(new RenderMesh(MeshBuilders::CreateSphere(pos, 10)));
+        auxiliary_meshes_.push_back(new RenderMesh(MeshBuilders::CreateSphere(pos, 15)));
     }
 
 }

@@ -64,94 +64,28 @@ Mesh * FileUtil::LoadObj(std::string filename, std::string objname) {
     return mesh;
 }
 
-Mesh * FileUtil::LoadObj(QString filename)
+vector<vector<int>> FileUtil::LoadKeyIndices(QString filename)
 {
-//    QFile f(filename);
-
-//    if(!f.open(QIODevice::ReadOnly | QIODevice::Text))
-//    {
-//        qDebug()<<"Error: Obj file cannot be opened!";
-//        return 0;
-//    }
-
-//    QTextStream ts(&f);
-
-//    float x,y,z;
-//    unsigned a,b,c;
-//    Mesh obj = new Mesh();
-
-//    while(!ts.atEnd())
-//    {
-//        QString line = ts.readLine();
-
-//        QStringList strList = line.split(QRegExp("(\\s+)|/"));
-//        strList.removeAll("");
-
-//        if(strList.size() <= 0)
-//            continue;
-
-//        if(strList[0] == "v")
-//        {
-//            x = strList[1].toFloat();
-//            y = strList[2].toFloat();
-//            z = strList[3].toFloat();
-//            obj.AddVertice(Vec3(x, y, z));
-//        }
-
-//        if(strList[0] == "vt")
-//        {
-//            x = strList[1].toFloat();
-//            y = strList[2].toFloat();
-//            obj.AddUV({ x, y });
-//        }
-
-//        if(strList[0] == "vn")
-//        {
-//            Point3 tmp(strList[1].toFloat(),strList[2].toFloat(),strList[3].toFloat());
-//            m_normals.push_back(tmp);
-//            x = strList[1].toFloat();
-//            y = strList[2].toFloat();
-//            z = strList[3].toFloat();
-//            obj.AddNormal(Vec3(x, y, z));
-//        }
-
-//        if(strList[0] == "usemtl")
-//        {
-//            if(tMesh!=NULL)
-//            {
-//                tMesh->dataCount=tCount;
-//                tCount=0;
-//                m_meshes.push_back(tMesh);
-//                //delete tMesh;
-//            }
-//            tMesh=new Mesh;
-//            tMesh->dataOffset=offset;
-//            for(int i=0;i<m_mtls.size();i++)
-//            {
-//                if(strList[1] == m_mtls[i]->Name)
-//                {
-//                    tMesh->material=m_mtls[i];
-//                }
-//            }
-//        }
-
-//        if(strList[0] == "f")
-//        {
-
-//            a = strList[1].toINT();
-//            b = strList[4].toShort();
-//            c = strList[7].toShort();
-//            obj.AddFace({ a, b, c });
-//        }
-//    }
-    return new Mesh();
+    vector<vector<int>> ans;
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadOnly|QIODevice::Text)){
+        return ans;
+    }
+    int id;
+    while(!file.atEnd()){
+        vector<int> indices;
+        QByteArray line = file.readLine();
+        QString str(line);
+        QStringList list = str.split(" ");
+        for(auto & data: list){
+           id = data.toInt();
+           if(id!=0)
+               indices.push_back(id);
+        }
+        ans.push_back(indices);
+    }
+    return ans;
 }
-
-//void FileUtil::WriteObj(std::string filename, Obj obj) {
-//    ObjUnion objUnion;
-//    objUnion += obj;
-//    WriteObjUnion(filename, objUnion);
-//}
 
 vector<Transform> FileUtil::ReadPose(string filename) {
     vector<Transform> poses;

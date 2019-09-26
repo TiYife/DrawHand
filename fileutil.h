@@ -16,13 +16,7 @@ class FileUtil{
 public:
     static Mesh * LoadObj(std::string filename, string objname);
 
-//    static vector<int> LoadMarkPoints
-
-    static Mesh * LoadObj(QString filename);
-
-    //static void WriteObjUnion(string filename, ObjUnion objs);
-
-    static void WriteObj(string filename, Mesh obj);
+    static vector<vector<int>> LoadKeyIndices(QString filename);
 
     static vector<Transform> ReadPose(string filename );
 

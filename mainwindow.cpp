@@ -99,7 +99,21 @@ void MainWindow::documentWasModified()
     setWindowModified(true);
 }
 
-void MainWindow::findIndices()
+void MainWindow::addAuxiliaryShapes()
+{
+//    int list[] = {1374, 1375, 1376, 1377, 1378, 1379, 1380, 1381, 1382, 1383, 1384, 1385, 1386, 1387, 1388, 1389, 1390, 1391, 1392, 1393, 1394, 1395, 1396, 1397, 1398, 1399, 1400, 1401, 1402, 1403, 1404, 1405, 1406, 1407, 1408, 1409, 1410, 1411, 1412, 1413, 1414, 1415, 1416, 1417, 1418, 1419, 1420, 1421, 1422, 1423, 1424, 1425, 1426, 1427, 1428, 1429, 1430, 1431, 1432, 1433, 1434, 1435, 1436, 1437, 1438, 1439, 1440, 1441, 1442, 1443, 1444, 1445, 1446, 1447, 1448, 1449, 1450, 1451, 1452, 1453, 1454, 2418, 2419, 2420, 2423, 2424, 2425, 2426, 2427, 2428, 2429, 2433, 2434, 2435, 2437, 2438, 2439, 2440, 2441, 2481, 2482, 2483, 2486, 2487, 2488, 2489, 2490, 2491, 2492, 2493, 2494, 2495, 2496, 2497, 2500, 2501, 2504, 2505, 2506, 2507, 2508, 2509, 2555, 2556, 2557, 2562, 2563, 2564, 2565, 2566, 2567, 2568, 2569, 2570, 2571, 2572, 2573, 2580, 2581, 2582, 2585, 2586, 2587, 2588, 2589, 2590, 2591, 2592, 2593, 2629, 2630, 2631, 2633, 2634, 2635, 2636, 2637, 2641, 2642, 2643, 2646, 2647, 2648, 2649, 2650, 2651, 2652, 2653, 2654, 2655, 2656, 2657, 3934, 3935, 3936, 3937, 3938, 3939, 3940, 3941, 3942, 3943, 3944, 3945, 3946, 3947, 3948, 3949, 3950, 3951, 3952, 3953, 3954, 3955, 3956, 3962, 3964, 3990, 3991, 3993, 3994, 3995, 3996, 3997, 3998, 3999, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010, 4011, 4012};
+//    std::vector<int> indices(list, list + 218);
+
+    const QString filename = QFileDialog::getOpenFileName(this);
+    if (filename.isEmpty())
+        return;
+    std::vector<std::vector<int>> key_indices = FileUtil::LoadKeyIndices(filename);
+
+    for(auto& indices:key_indices)
+        panel ->addKeyIndices(indices);
+}
+
+void MainWindow::findKeyIndices()
 {
     const QString fileName = QFileDialog::getOpenFileName(this);
     if (fileName.isEmpty())
@@ -111,11 +125,7 @@ void MainWindow::findIndices()
     std::cout<<s2<<std::endl;
     Mesh mesh = FileUtil::LoadObj(s2, "");
 
-//    std::vector<int> indices = ori.FindLostIndices(mesh);
-    int list[] = {1374, 1375, 1376, 1377, 1378, 1379, 1380, 1381, 1382, 1383, 1384, 1385, 1386, 1387, 1388, 1389, 1390, 1391, 1392, 1393, 1394, 1395, 1396, 1397, 1398, 1399, 1400, 1401, 1402, 1403, 1404, 1405, 1406, 1407, 1408, 1409, 1410, 1411, 1412, 1413, 1414, 1415, 1416, 1417, 1418, 1419, 1420, 1421, 1422, 1423, 1424, 1425, 1426, 1427, 1428, 1429, 1430, 1431, 1432, 1433, 1434, 1435, 1436, 1437, 1438, 1439, 1440, 1441, 1442, 1443, 1444, 1445, 1446, 1447, 1448, 1449, 1450, 1451, 1452, 1453, 1454, 2418, 2419, 2420, 2423, 2424, 2425, 2426, 2427, 2428, 2429, 2433, 2434, 2435, 2437, 2438, 2439, 2440, 2441, 2481, 2482, 2483, 2486, 2487, 2488, 2489, 2490, 2491, 2492, 2493, 2494, 2495, 2496, 2497, 2500, 2501, 2504, 2505, 2506, 2507, 2508, 2509, 2555, 2556, 2557, 2562, 2563, 2564, 2565, 2566, 2567, 2568, 2569, 2570, 2571, 2572, 2573, 2580, 2581, 2582, 2585, 2586, 2587, 2588, 2589, 2590, 2591, 2592, 2593, 2629, 2630, 2631, 2633, 2634, 2635, 2636, 2637, 2641, 2642, 2643, 2646, 2647, 2648, 2649, 2650, 2651, 2652, 2653, 2654, 2655, 2656, 2657, 3934, 3935, 3936, 3937, 3938, 3939, 3940, 3941, 3942, 3943, 3944, 3945, 3946, 3947, 3948, 3949, 3950, 3951, 3952, 3953, 3954, 3955, 3956, 3962, 3964, 3990, 3991, 3993, 3994, 3995, 3996, 3997, 3998, 3999, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010, 4011, 4012};
-    std::vector<int> indices(list, list + 218);
-
-    panel ->addKeyIndices(indices);
+    std::vector<int> indices = ori.FindLostIndices(mesh);
     for(auto & i: indices){
         std::cout<<i<<std::endl;
     }
@@ -216,15 +226,25 @@ void MainWindow::createActions()
     exitAct->setShortcuts(QKeySequence::Quit);
     exitAct->setStatusTip(tr("Exit the application"));
 
+
+
+
     QMenu *toolMenu = menuBar()->addMenu(tr("&Tool"));
     QToolBar *toolToolBar = addToolBar(tr("Tool"));
 
-#ifndef QT_NO_CLIPBOARD
+    const QIcon auxIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
+    QAction *auxAct = new QAction(auxIcon, tr("Cu&t"), this);
+    auxAct->setShortcuts(QKeySequence::Cut);
+    auxAct->setStatusTip(tr("add Auxiliary shapes"));
+    connect(auxAct, &QAction::triggered, this, &MainWindow::addAuxiliaryShapes);
+    toolMenu->addAction(auxAct);
+    toolToolBar->addAction(auxAct);
+
     const QIcon findIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
     QAction *findAct = new QAction(findIcon, tr("Cu&t"), this);
     findAct->setShortcuts(QKeySequence::Cut);
     findAct->setStatusTip(tr("get joint indices"));
-    connect(findAct, &QAction::triggered, this, &MainWindow::findIndices);
+    connect(findAct, &QAction::triggered, this, &MainWindow::findKeyIndices);
     toolMenu->addAction(findAct);
     toolToolBar->addAction(findAct);
 
@@ -247,7 +267,6 @@ void MainWindow::createActions()
 //    editToolBar->addAction(pasteAct);
 
     menuBar()->addSeparator();
-#endif // !QT_NO_CLIPBOARD
 
     QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
     QAction *aboutAct = helpMenu->addAction(tr("&About"), this, &MainWindow::about);
