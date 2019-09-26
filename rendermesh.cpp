@@ -84,15 +84,19 @@ void RenderMesh::update()
         return;
     QVector3D p,n;
     QVector2D t;
-    Vec3 position, normal;
-
+    Vec3 position;
+    Vec3 normal = Vec3(0,0,0);
+    Vec2 texcoords = Vec2(0,0);
     for(size_t i = 0; i < mesh_->positions_.size();i++){
         position = mesh_->transform_ * mesh_->positions_[i];
-        normal = mesh_->transform_ * mesh_->normals_[i];
+        if(mesh_->normals_.size()!=0)
+            normal = mesh_->transform_ * mesh_->normals_[i];
+        if(mesh_->texcoords_.size()!=0)
+            texcoords = mesh_->texcoords_[i];
         p = QVector3D(position.x(), position.y(), position.z());
         n = QVector3D(normal.x(), normal.y(), normal.z());
-        t = QVector2D(mesh_->texcoords_[i].x(), mesh_->texcoords_[i].y());
-        std::cout<<position.x()<<" "<<position.y()<<" "<<position.z()<<std::endl;
+        t = QVector2D(texcoords.x(), texcoords.y());
+//        std::cout<<position.x()<<" "<<position.y()<<" "<<position.z()<<std::endl;
         vertices_.push_back({p,n,t});
     }
 
