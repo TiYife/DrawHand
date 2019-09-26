@@ -27,6 +27,7 @@ public:
     void AddNormal(Vec3 n);
     void AddUV(const Vec2 & uv);
     void AddFace(Face f);
+    void setTransform(Transform t);
 
     const std::string &GetName();
     const std::string &GetMtl();

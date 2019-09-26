@@ -24,9 +24,9 @@ public:
     void draw(QOpenGLShaderProgram * program);
 
     void update();
-
-private:
     Mesh * mesh_;
+private:
+
     std::vector<RenderVertex> vertices_;
     QOpenGLBuffer arrayBuffer;
     QOpenGLBuffer indexBuffer;

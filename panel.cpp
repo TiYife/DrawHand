@@ -2,6 +2,7 @@
 #include <QOpenGLTexture>
 #include <QMouseEvent>
 #include "panel.h"
+#include "meshbuilders.h"
 
 Panel::Panel(QWidget *parent) :
     QOpenGLWidget(parent),
@@ -11,7 +12,8 @@ Panel::Panel(QWidget *parent) :
     scale_(0.05),
     offset_x_(0),
     offset_y_(0),
-    offset_z_(-5.0)
+    offset_z_(-5.0),
+    hand_mesh_(0)
 {
     this->grabKeyboard();
 }
@@ -23,6 +25,11 @@ Panel::~Panel()
     makeCurrent();
     doneCurrent();
     delete texture_;
+    delete hand_mesh_;
+
+    for(auto it = meshes_.rbegin(); it!=meshes_.rend();it++)
+        delete *it;
+
 }
 
 //! [0]
@@ -205,9 +212,34 @@ void Panel::paintGL()
     // Draw cube geometry
     for(auto& mesh_:meshes_)
         mesh_->draw(&program_);
+    if(hand_mesh_)
+        hand_mesh_->draw(&program_);
 }
 
 
-void Panel::setMesh(Mesh * mesh){
+void Panel::addMesh(Mesh * mesh){
     meshes_.push_back(new RenderMesh(mesh));
+}
+
+void Panel::setHandMesh(Mesh *mesh)
+{
+    if(hand_mesh_!=nullptr)
+        delete hand_mesh_;
+    hand_mesh_ = new RenderMesh(mesh);
+}
+
+void Panel::addKeyIndices(const std::vector<int> &indices)
+{
+    hand_key_indices.push_back(indices);
+
+    Vec3 pos = Vec3(0,0,0);
+    for(auto& i: indices){
+        //todo mesh_
+        pos+=hand_mesh_->mesh_->positions_[i];
+
+    }
+    pos/=indices.size();
+
+    meshes_.push_back(new RenderMesh(MeshBuilders::CreateSphere(pos, 1.0)));
+
 }

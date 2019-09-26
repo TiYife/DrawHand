@@ -19,7 +19,9 @@ public:
     explicit Panel(QWidget *parent = 0);
     ~Panel();
 
-    void setMesh(Mesh * mesh);
+    void addMesh(Mesh * mesh);
+    void setHandMesh(Mesh * mesh);
+    void addKeyIndices(const std::vector<int> & indices);
 protected:
     void mousePressEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
@@ -40,7 +42,6 @@ protected:
 private:
     QBasicTimer timer_;
     QOpenGLShaderProgram program_;
-    std::vector<RenderMesh *> meshes_;
 
     QOpenGLTexture * texture_;
 
@@ -53,5 +54,10 @@ private:
     qreal scale_;
     qreal offset_x_, offset_y_, offset_z_;
     bool press;
+
+    RenderMesh * hand_mesh_;
+    std::vector<RenderMesh *> meshes_;
+    std::vector<std::vector<int>> hand_key_indices;
+
 };
 #endif // PANEL_H

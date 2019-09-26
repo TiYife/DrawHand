@@ -106,6 +106,11 @@ void Mesh::AddFace(Face f)
     faces_.push_back(f);
 }
 
+void Mesh::setTransform(Transform t)
+{
+    transform_ = t;
+}
+
 const std::string & Mesh::GetName()
 {
     return name_;

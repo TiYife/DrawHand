@@ -6,25 +6,29 @@ class Transform
 {
 public:
     Transform(){
-        quat_ = Eigen::Quaterniond (1,0,0,0);
-        pos_ = Vec3(0,0,0);
+        quatate_ = Eigen::Quaterniond (1,0,0,0);
+        translate_ = Vec3(0,0,0);
     };
 
     Transform(const Quat & q, const Vec3 & p){
-        quat_ = q;
-        pos_ = p;
+        quatate_ = q;
+        translate_ = p;
+    }
+
+    void setTranslate(const Vec3 & pos ){
+        translate_ = pos;
     }
 
     Vec3 operator * (const Vec3 & vec3){
         Eigen::Isometry3d T = Eigen::Isometry3d::Identity();
-        T.rotate(quat_.toRotationMatrix());
-        T.pretranslate(pos_);
+        T.rotate(quatate_.toRotationMatrix());
+        T.pretranslate(translate_);
         return T * vec3;
     }
 
 private:
-    Quat quat_;
-    Vec3 pos_;
+    Quat quatate_;
+    Vec3 translate_;
 };
 
 #endif // TRANSFORM_H

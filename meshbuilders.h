@@ -5,7 +5,7 @@
 class MeshBuilders
 {
 public:
-    static Mesh CreateSphere(real_t r);
+    static Mesh * CreateSphere(Vec3 pos, real_t r);
 };
 
 #endif // MESHBUILDERS_H

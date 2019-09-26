@@ -112,6 +112,8 @@ void MainWindow::findIndices()
     Mesh mesh = FileUtil::LoadObj(s2, "");
 
     std::vector<int> indices = ori.FindLostIndices(mesh);
+
+    panel ->addKeyIndices(indices);
     for(auto & i: indices){
         std::cout<<i<<std::endl;
     }
@@ -312,7 +314,7 @@ void MainWindow::loadFile(const QString &fileName)
     QString s = fileName;
     Mesh * mesh = FileUtil::LoadObj(s.toStdString(), "");
 
-    panel->setMesh(mesh);
+    panel->setHandMesh(mesh);
 //    QFile file(fileName);
 //    if (!file.open(QFile::ReadOnly | QFile::Text)) {
 //        QMessageBox::warning(this, tr("SDI"),
