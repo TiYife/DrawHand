@@ -1,15 +1,10 @@
 #ifndef PANEL_H
 #define PANEL_H
 
-#include "renderMesh.h"
 #include <QOpenGLWidget>
-#include <QOpenGLFunctions>
-#include <QMatrix4x4>
 #include <QQuaternion>
-#include <QVector2D>
 #include <QBasicTimer>
-#include <QOpenGLShaderProgram>
-#include <QOpenGLTexture>
+#include "render.h"
 
 class Panel : public QOpenGLWidget, protected QOpenGLFunctions
 {
@@ -44,11 +39,11 @@ private:
 
 
 private:
-    QBasicTimer timer_;
-    QOpenGLShaderProgram hand_program_;
-    QOpenGLShaderProgram default_program_;
+//    QBasicTimer timer_;
+//    QOpenGLShaderProgram hand_program_;
+//    QOpenGLShaderProgram default_program_;
 
-    QOpenGLTexture * texture_;
+//    QOpenGLTexture * texture_;
 
     QMatrix4x4 projection_;
 
@@ -60,8 +55,9 @@ private:
     qreal offset_x_, offset_y_, offset_z_;
     bool press;
 
-    RenderMesh * hand_mesh_;
-    std::vector<RenderMesh *> auxiliary_meshes_;
+    unique_ptr<Render> render;
+    unique_ptr<Mesh> hand_mesh_;
+    std::vector<unique_ptr<Mesh>> auxiliary_meshes_;
     std::vector<std::vector<int>> hand_key_indices;
 
 };

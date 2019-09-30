@@ -1,8 +1,8 @@
 #include "meshbuilders.h"
 
-Mesh * MeshBuilders::CreateSphere(Vec3 pos, double r)
+unique_ptr<Mesh> MeshBuilders::CreateSphere(Vec3 pos, double r)
 {
-    Mesh * mesh = new Mesh();
+    unique_ptr<Mesh> mesh(new Mesh());
     int row;
         if (r < 3.f / 20)
             row = 3;

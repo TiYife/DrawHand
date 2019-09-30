@@ -38,7 +38,8 @@ SOURCES += \
     rendermesh.cpp \
     fileutil.cpp \
     mesh.cpp \
-    meshbuilders.cpp
+    meshbuilders.cpp \
+    render.cpp
 
 HEADERS += \
     rendermesh.h \
@@ -56,7 +57,8 @@ HEADERS += \
     mesh.h \
     meshbuilders.h \
     transform.h \
-    commontype.h
+    commontype.h \
+    render.h
 
 FORMS += \
         mainwindow.ui

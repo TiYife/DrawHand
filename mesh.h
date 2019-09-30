@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <memory>
 #include "transform.h"
 
 class Mesh

@@ -1,12 +1,9 @@
 #ifndef COMMONTYPE_H
 #define COMMONTYPE_H
 
-#include <vector>
 #include <Eigen/Core>
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
-#include <string>
-#include <iostream>
 
 #define Vec3 Eigen::Vector3d
 #define Vec2 Eigen::Vector2d

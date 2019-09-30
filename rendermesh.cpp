@@ -1,19 +1,41 @@
 #include "rendermesh.h"
 
-RenderMesh::RenderMesh(Mesh *mesh):
+RenderMesh::RenderMesh(Mesh *mesh, unique_ptr<QOpenGLShaderProgram>& shader, QColor color):
     mesh_(mesh),
     indexBuffer(QOpenGLBuffer::IndexBuffer)
 {
     initializeOpenGLFunctions();
-    arrayBuffer.create();
-    indexBuffer.create();
+
+    mesh_=mesh;
+    shader_ = move(shader);
+    color_ = color;
     initialize();
 }
+
+RenderMesh::RenderMesh(Mesh *mesh, unique_ptr<QOpenGLShaderProgram>& shader, unique_ptr<QOpenGLTexture>& texture):
+    mesh_(mesh),
+    indexBuffer(QOpenGLBuffer::IndexBuffer)
+{
+    initializeOpenGLFunctions();
+
+    shader_ = move(shader);
+    texture_ = move(texture);
+    initialize();
+}
+
+//RenderMesh::RenderMesh(const RenderMesh &render_mesh)
+//{
+//    shader_ = move(render_mesh.shader_);
+//    texture_ = move(render_mesh.texture_);
+//    color_ = render_mesh.color_;
+//    vertices_ = render_mesh.vertices_;
+//    arrayBuffer = render_mesh.arrayBuffer;
+//    indexBuffer = render_mesh.indexBuffer;
+//}
 
 RenderMesh::~RenderMesh(){
     arrayBuffer.destroy();
     indexBuffer.destroy();
-    delete mesh_;
 }
 
 void RenderMesh::initialize()
@@ -22,15 +44,29 @@ void RenderMesh::initialize()
 
     update();
 
+    arrayBuffer.create();
     arrayBuffer.bind();
     arrayBuffer.allocate(&vertices_[0], static_cast<int>(vertices_.size() * sizeof(RenderVertex)));
 
+    indexBuffer.create();
     indexBuffer.bind();
     indexBuffer.allocate(&mesh_->faces_[0],static_cast<int>(mesh_->faces_.size() * sizeof(Face)));
 }
 
-void RenderMesh::draw(QOpenGLShaderProgram * program)
+void RenderMesh::draw(QMatrix4x4 mat)
 {
+    if (!shader_->bind())
+        return;
+
+    shader_->setUniformValue("mvp_matrix", mat);
+    if(texture_){
+        texture_->bind();
+        shader_->setUniformValue("texture", 0);//todo ? 0
+    }
+    else{
+        shader_->setUniformValue("color", color_);
+    }
+
     arrayBuffer.bind();
     indexBuffer.bind();
 
@@ -38,19 +74,19 @@ void RenderMesh::draw(QOpenGLShaderProgram * program)
     //mesh_->CalculateNormal();
 
     quintptr offset = 0;
-    int vertex_location = program->attributeLocation("a_position");
-    program -> enableAttributeArray(vertex_location);
-    program -> setAttributeBuffer(vertex_location, GL_FLOAT, offset, 3, sizeof(RenderVertex));
+    int vertex_location = shader_->attributeLocation("a_position");
+    shader_ -> enableAttributeArray(vertex_location);
+    shader_ -> setAttributeBuffer(vertex_location, GL_FLOAT, offset, 3, sizeof(RenderVertex));
 
     offset += sizeof(QVector3D);
-    int normal_location = program->attributeLocation("a_normal");
-    program -> enableAttributeArray(normal_location);
-    program -> setAttributeBuffer(normal_location, GL_FLOAT, offset, 3, sizeof(RenderVertex));
+    int normal_location = shader_->attributeLocation("a_normal");
+    shader_ -> enableAttributeArray(normal_location);
+    shader_ -> setAttributeBuffer(normal_location, GL_FLOAT, offset, 3, sizeof(RenderVertex));
 
     offset += sizeof(QVector3D);
-    int texcoord_location = program -> attributeLocation("a_texcoord");
-    program -> enableAttributeArray(texcoord_location);
-    program -> setAttributeBuffer(texcoord_location, GL_FLOAT, offset, 2, sizeof(RenderVertex));
+    int texcoord_location = shader_ -> attributeLocation("a_texcoord");
+    shader_ -> enableAttributeArray(texcoord_location);
+    shader_ -> setAttributeBuffer(texcoord_location, GL_FLOAT, offset, 2, sizeof(RenderVertex));
 
 //    for(auto& v: vertices_){
 //        std::cout<<v.position.x()<<" "<<v.position.y()<<" "<<v.position.z()<<std::endl;
@@ -91,7 +127,7 @@ void RenderMesh::update()
         position = mesh_->transform_ * mesh_->positions_[i];
         if(mesh_->normals_.size()!=0)
             normal = mesh_->transform_ * mesh_->normals_[i];
-        if(mesh_->texcoords_.size()!=0)
+        if(texture_ && mesh_->texcoords_.size()!=0)
             texcoords = mesh_->texcoords_[i];
         p = QVector3D(position.x(), position.y(), position.z());
         n = QVector3D(normal.x(), normal.y(), normal.z());
