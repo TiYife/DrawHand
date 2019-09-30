@@ -11,7 +11,7 @@ Panel::Panel(QWidget *parent) :
     press(false),
     scale_(0.01),
     offset_x_(0),
-    offset_y_(1.6),
+    offset_y_(-1.5),
     offset_z_(-5),
     hand_mesh_(0)
 {
