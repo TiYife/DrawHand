@@ -6,9 +6,9 @@ class Transform
 {
 public:
     Transform(){
-        quatate_ = Eigen::Quaterniond (1,0,0,0);
+        quatate_ = Quat (1,0,0,0);
         translate_ = Vec3(0,0,0);
-    };
+    }
 
     Transform(const Quat & q, const Vec3 & p){
         quatate_ = q;
@@ -20,10 +20,24 @@ public:
     }
 
     Vec3 operator * (const Vec3 & vec3){
-        Eigen::Isometry3d T = Eigen::Isometry3d::Identity();
+        Eigen::Isometry3f T = Eigen::Isometry3f::Identity();
         T.rotate(quatate_.toRotationMatrix());
         T.pretranslate(translate_);
         return T * vec3;
+    }
+
+    Mat4 ToMat4(){
+        Eigen::Isometry3f T = Eigen::Isometry3f::Identity();
+        T.rotate(quatate_.toRotationMatrix());
+        T.pretranslate(translate_);
+
+        Mat4 mat =T.matrix();
+        return mat;
+    }
+
+
+    QMat4 toQMat4(){
+        return ToQType(ToMat4());
     }
 
 private:

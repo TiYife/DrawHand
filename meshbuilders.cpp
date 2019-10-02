@@ -1,6 +1,6 @@
 #include "meshbuilders.h"
 
-unique_ptr<Mesh> MeshBuilders::CreateSphere(Vec3 pos, double r)
+unique_ptr<Mesh> MeshBuilders::CreateSphere(Vec3 pos, real_t r)
 {
     unique_ptr<Mesh> mesh(new Mesh());
     int row;
@@ -102,6 +102,6 @@ unique_ptr<Mesh> MeshBuilders::CreateSphere(Vec3 pos, double r)
         }
         Transform t;
         t.setTranslate(pos);
-        mesh->setTransform(t);
+        mesh->SetTransform(t);
         return mesh;
 }

@@ -4,26 +4,61 @@
 #include <Eigen/Core>
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
+#include <QMatrix4x4>
+#include <QVector3D>
+#include <QVector2D>
 
-#define Vec3 Eigen::Vector3d
-#define Vec2 Eigen::Vector2d
-#define Quat Eigen::Quaterniond
-#define real_t double
+#define real_t float
+
+#define Vec3 Eigen::Vector3f
+#define Vec2 Eigen::Vector2f
+#define Quat Eigen::Quaternionf
+#define Mat4 Eigen::Matrix4f
+
+#define QVec3 QVector3D
+#define QVec2 QVector2D
+#define QQuat QQuaternion
+#define QMat4 QMatrix4x4
+
 
 #define M_PI 3.141592653579
 #define M_PI_2 M_PI*M_PI
 
-struct Face
-{
-    unsigned v0, v1, v2;
-};
+static QVec3 ToQType(const Vec3& e){
+    QVec3 q;
+    q[0] = e[0];
+    q[1] = e[1];
+    q[2] = e[2];
+    return q;
+}
 
-struct Vertex
-{
-    Vec3 position;
-    Vec3 normal;
-    Vec2 texcoord;
-};
+static QVec2 ToQType(const Vec2& e){
+    QVec2 q;
+    q[0] = e[0];
+    q[1] = e[1];
+    return q;
+}
+
+static QQuat ToQType(const Quat& e){
+    QQuat q;
+    q.setX(e.x());
+    q.setY(e.y());
+    q.setZ(e.z());
+    q.setScalar((e.w()));
+    return q;
+}
+
+
+static QMat4 ToQType(const Mat4& e){
+    QMatrix4x4 qmat;
+    real_t * data = new real_t[16];
+    for(int i = 0; i < 4; i++){
+        for(int j = 0; j < 4; j++){
+            data[4*i+j] = e(i,j);
+        }
+    }
+    return QMat4(data);
+}
 
 
 #endif // COMMONTYPE_H

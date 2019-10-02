@@ -13,7 +13,7 @@ Panel::Panel(QWidget *parent) :
     offset_z_(-5),
     hand_mesh_(nullptr)
 {
-    render = unique_ptr<Render>(new Render());
+//    render = unique_ptr<Render>(new Render());
     this->grabKeyboard();
 }
 
@@ -33,7 +33,7 @@ Panel::~Panel()
 void Panel::mousePressEvent(QMouseEvent *e)
 {
     // Save mouse press position
-    mouse_position_ = QVector2D(e->localPos());
+    mouse_position_ = QVec2(e->localPos());
     press = true;
 }
 
@@ -46,11 +46,11 @@ void Panel::mouseReleaseEvent(QMouseEvent *e)
 void Panel::mouseMoveEvent(QMouseEvent *e)
 {
     // Mouse release position - mouse press position
-    QVector2D diff = QVector2D(e->localPos()) - mouse_position_;
+    QVec2 diff = QVec2(e->localPos()) - mouse_position_;
 
     // Rotation axis is perpendicular to the mouse position difference
     // vector
-    QVector3D n = QVector3D(diff.y(), diff.x(), 0.0).normalized();
+    QVec3 n = QVec3(diff.y(), diff.x(), 0.0).normalized();
 
     // Accelerate angular speed relative to the length of the mouse sweep
     qreal acc = diff.length() * 0.05;
@@ -224,11 +224,14 @@ void Panel::paintGL()
 
 
     // Calculate model view transformation
-    QMatrix4x4 matrix;
+    QMat4 matrix;
     matrix.translate(offset_x_, offset_y_, offset_z_);
     matrix.rotate(rotation_);
     matrix.scale(scale_);
-    render->drawAll(projection_ * matrix);
+    for(auto& it = mesh_map_.begin(); it != mesh_map_.end();it++){
+        it->second->draw(matrix, projection_);
+    }
+//    render->drawAll(matrix, projection_);
 
     // Set modelview-projection matrix
 //    if(hand_mesh_){
@@ -263,7 +266,8 @@ void Panel::paintGL()
 
 void Panel::addMesh(Mesh * mesh){
 //    auxiliary_meshes_.push_back(new RenderMesh(mesh));
-    render->addMesh(mesh, QColor(255,0,0));
+//    render->addMesh(mesh, QColor(255,0,0));
+    mesh_map_[mesh] = unique_ptr<RenderMesh>(new SimpleRenderMesh(mesh, QColor(255,0,0)));
     auxiliary_meshes_.push_back(unique_ptr<Mesh>(mesh));
 }
 
@@ -273,7 +277,8 @@ void Panel::setHandMesh(Mesh *mesh)
         clearAuxiliaryMeshes();
     }
 
-    render->addMesh(mesh, QString(":/resource/images/handD.bmp"));
+//    render->addMesh(mesh, QString(":/resource/images/handD.bmp"));
+    mesh_map_[mesh] = unique_ptr<RenderMesh>(new TextureRenderMesh(mesh, QString(":/resource/images/handD.bmp")));
     hand_mesh_ = unique_ptr<Mesh>(mesh);
     updateAuxiliaryMeshes();
 }

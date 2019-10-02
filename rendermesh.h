@@ -6,37 +6,62 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
 #include <QOpenGLBuffer>
-#include <QMatrix4x4>
-#include <QVector3D>
-#include <QVector2D>
 using namespace std;
 
 struct RenderVertex{
-    QVector3D position;
-    QVector3D normal;
-    QVector2D texcoord;
+    QVec3 position;
+    QVec3 normal;
+    QVec2 texcoord;
 };
 
 class RenderMesh: protected QOpenGLFunctions
 {
 public:
-    RenderMesh(Mesh * mesh, unique_ptr<QOpenGLShaderProgram>& shader, QColor color);
-    RenderMesh(Mesh * mesh, unique_ptr<QOpenGLShaderProgram>& shader, unique_ptr<QOpenGLTexture>& texture);
-//    RenderMesh(const RenderMesh & render_mesh);
+    RenderMesh(Mesh * mesh);
     virtual ~RenderMesh();
 
-    void initialize();
-    void draw(QMatrix4x4 mat);
+    virtual void draw(QMat4 view, QMat4 projection) = 0;
 
-    void update();
+    void initialize();
+
+
+protected:
     Mesh * mesh_;
-private:
     unique_ptr<QOpenGLShaderProgram> shader_;
-    unique_ptr<QOpenGLTexture> texture_;
-    QColor color_;
     std::vector<RenderVertex> vertices_;
     QOpenGLBuffer arrayBuffer;
     QOpenGLBuffer indexBuffer;
+};
+
+
+class TextureRenderMesh : public RenderMesh
+{
+public:
+    TextureRenderMesh(Mesh * mesh, QString textrue_path);
+    virtual ~TextureRenderMesh();
+
+    void initshader();
+    void inittexture(QString textrue_path);
+    void update();
+    virtual void draw(QMat4 view, QMat4 projection) override;
+
+private:
+    unique_ptr<QOpenGLTexture> texture_;
+};
+
+
+class SimpleRenderMesh : public RenderMesh
+{
+public:
+    SimpleRenderMesh(Mesh * mesh, QColor color);
+    virtual ~SimpleRenderMesh();
+
+    void initshader();
+    void update();
+    virtual void draw(QMat4 view, QMat4 projection) override;
+
+private:
+    QColor color_;
 };
 
 #endif // RENDERMESH_H

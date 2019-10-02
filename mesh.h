@@ -6,6 +6,18 @@
 #include <memory>
 #include "transform.h"
 
+struct Face
+{
+    unsigned v0, v1, v2;
+};
+
+struct Vertex
+{
+    Vec3 position;
+    Vec3 normal;
+    Vec2 texcoord;
+};
+
 class Mesh
 {
 public:
@@ -20,15 +32,16 @@ public:
     Mesh operator * (Transform t);
     void operator +=(const Mesh& mesh);
 
-    void SetName(std::string name);
-    void SetMtl(std::string mtl);
-    void SetMtlFile(std::string path);
+    void SetName(const std::string& name);
+    void SetMtl(const std::string& mtl);
+    void SetMtlFile(const std::string& path);
 
-    void AddVertice(Vec3 v);
-    void AddNormal(Vec3 n);
+    void AddVertice(const Vec3& v);
+    void AddNormal(const Vec3& n);
     void AddUV(const Vec2 & uv);
-    void AddFace(Face f);
-    void setTransform(Transform t);
+    void AddFace(const Face& f);
+    void SetTransform(const Transform& t);
+
 
     const std::string &GetName();
     const std::string &GetMtl();
@@ -38,17 +51,14 @@ public:
     const std::vector<Vec3>& GetNormals();
     const std::vector<Vec2>& GetUVs();
     const std::vector<Face>& GetFaces();
+    const Transform& GetTransform();
 
     std::vector<int> FindUselessVertices();
     std::vector<int> FindLostIndices(Mesh mesh);
 
-    friend class MeshUnion;
-
-private:
-
-    Mesh Transfrom(const Eigen::Isometry3d& t);
     void CalculateNormal();
 
+    friend class MeshUnion;
 public:
     std::vector<Face> faces_;
     std::vector<Vec3> positions_;
@@ -56,6 +66,9 @@ public:
     std::vector<Vec2> texcoords_;
     Transform transform_;
     std::string name_, mtl_file_path_, mtl_name_;
+
+    bool use_transform{false};
+    bool has_texture_{false};
 };
 
 class MeshUnion

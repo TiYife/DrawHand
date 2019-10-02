@@ -24,7 +24,7 @@ public:
 
     static vector<Vec2> ReadUV(string filename);
 
-    static vector<Eigen::Vector3d> ReadVec3d(string filename);
+    static vector<Vec3> ReadVec3(string filename);
 
     static string GetObjectName(ObjectType type);
 };

@@ -97,7 +97,7 @@ vector<Transform> FileUtil::ReadPose(string filename) {
     while (getline(in, line)) {
         istringstream ss(line);
         ss >> i >> a >> b >> c >> x >> y >> z >> w;
-        poses.push_back({ Eigen::Quaterniond(w,x,y,z), Vec3(a,b,c) });
+        poses.push_back({ Quat(w,x,y,z), Vec3(a,b,c) });
     }
     return poses;
 }
@@ -115,7 +115,7 @@ vector<Face> FileUtil::readIndex(string filename) {
     return faces;
 }
 
-vector<Eigen::Vector2d> FileUtil::ReadUV(string filename) {
+vector<Vec2> FileUtil::ReadUV(string filename) {
     vector<Vec2> data;
     double x, y;
     ifstream in(filename);
@@ -128,7 +128,7 @@ vector<Eigen::Vector2d> FileUtil::ReadUV(string filename) {
     return data;
 }
 
-vector<Vec3> FileUtil::ReadVec3d(string filename) {
+vector<Vec3> FileUtil::ReadVec3(string filename) {
     vector<Vec3> data;
     double x, y, z;
     ifstream in(filename);

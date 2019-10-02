@@ -36,11 +36,6 @@ void Mesh::Update(std::vector<Vec3> p, std::vector<Vec3> n)
 
 Mesh Mesh::Transfrom(Transform t)
 {
-//    Eigen::Isometry3d T = Eigen::Isometry3d::Identity();
-//    T.rotate(p.quat_.toRotationMatrix());
-//    T.pretranslate(p.pos_);
-//    return this->Transfrom(T);
-
     Mesh mesh(this->name_);
     mesh.faces_ = this->faces_;
     mesh.texcoords_ = this->texcoords_;
@@ -71,27 +66,27 @@ void Mesh::operator+=(const Mesh & mesh)
     }
 }
 
-void Mesh::SetName(std::string name)
+void Mesh::SetName(const std::string& name)
 {
     this->name_ = name;
 }
 
-void Mesh::SetMtl(std::string mtl)
+void Mesh::SetMtl(const std::string& mtl)
 {
     mtl_name_ = mtl;
 }
 
-void Mesh::SetMtlFile(std::string path)
+void Mesh::SetMtlFile(const std::string& path)
 {
     mtl_file_path_ = path;
 }
 
-void Mesh::AddVertice(Vec3 v)
+void Mesh::AddVertice(const Vec3& v)
 {
     positions_.push_back(v);
 }
 
-void Mesh::AddNormal(Vec3 n)
+void Mesh::AddNormal(const Vec3& n)
 {
     normals_.push_back(n);
 }
@@ -99,16 +94,23 @@ void Mesh::AddNormal(Vec3 n)
 void Mesh::AddUV(const Vec2 & uv)
 {
     texcoords_.push_back(uv);
+    has_texture_ = true;
 }
 
-void Mesh::AddFace(Face f)
+void Mesh::AddFace(const Face& f)
 {
     faces_.push_back(f);
 }
 
-void Mesh::setTransform(Transform t)
+void Mesh::SetTransform(const Transform& t)
 {
     transform_ = t;
+    use_transform = true;
+}
+
+const Transform& Mesh::GetTransform()
+{
+    return transform_;
 }
 
 const std::string & Mesh::GetName()
@@ -171,23 +173,6 @@ std::vector<int> Mesh::FindLostIndices(Mesh mesh)
         }
     }
     return list;
-}
-
-
-
-Mesh Mesh::Transfrom(const Eigen::Isometry3d& t)
-{
-    Mesh mesh(this->name_);
-    mesh.faces_ = this->faces_;
-    mesh.texcoords_ = this->texcoords_;
-    for (auto& p : positions_) {
-        mesh.positions_.push_back(t * p);
-    }
-
-    for (auto& n : normals_) {
-        mesh.normals_.push_back(t * n);
-    }
-    return mesh;
 }
 
 float CalcAngleBetween(const Vec3 &dir_a, const Vec3 &dir_b) {
