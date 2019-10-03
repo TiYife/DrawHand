@@ -174,7 +174,17 @@ void Panel::initTextures()
 
 //    // Wrap texture coordinates by repeating
 //    // f.ex. texture coordinate (1.1, 1.2) is same as (0.1, 0.2)
-//    texture_->setWrapMode(QOpenGLTexture::Repeat);
+    //    texture_->setWrapMode(QOpenGLTexture::Repeat);
+}
+
+void Panel::changeMeshVisible(int id)
+{
+    if(id == -1)
+        hand_mesh_->SetVisible(1 - hand_mesh_->IsVisible());
+    else if(id == -2)
+        auxiliary_meshes_[id]->SetVisible(1 - auxiliary_meshes_[id]->IsVisible());
+    else
+        meshes_[id]->SetVisible(1 - meshes_[id]->IsVisible());
 }
 
 void Panel::clearAuxiliaryMeshes()

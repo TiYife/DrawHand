@@ -35,9 +35,11 @@ private slots:
     void openRecentFile();
     void about();
     void documentWasModified();
+
     void addAuxiliaryShapes();
     void findKeyIndices();
     void drawBall();
+    void showHideHand();
 
 private:
     enum { MaxRecentFiles = 5 };

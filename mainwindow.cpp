@@ -136,6 +136,11 @@ void MainWindow::drawBall()
     panel->addMesh(MeshBuilders::CreateSphere(Vec3(0,0,0), 0.1));
 }
 
+void MainWindow::showHideHand()
+{
+    panel -> changeMeshVisible(-1);
+}
+
 void MainWindow::init()
 {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -231,6 +236,19 @@ void MainWindow::createActions()
     exitAct->setShortcuts(QKeySequence::Quit);
     exitAct->setStatusTip(tr("Exit the application"));
 
+
+
+
+    QMenu *viewMenu = menuBar()->addMenu(tr("&View"));
+    QToolBar *viewToolBar = addToolBar(tr("View"));
+
+    const QIcon handIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
+    QAction *handAct = new QAction(handIcon, tr("Cu&t"), this);
+    handAct->setShortcuts(QKeySequence::Cut);
+    handAct->setStatusTip(tr("show hand"));
+    connect(handAct, &QAction::triggered, this, &MainWindow::showHideHand);
+    viewMenu->addAction(handAct);
+    viewToolBar->addAction(handAct);
 
 
 
