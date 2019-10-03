@@ -100,81 +100,17 @@ void Panel::keyPressEvent(QKeyEvent *e)
     update();
 }
 
-void Panel::timerEvent(QTimerEvent *)
-{
-    // Decrease angular speed (friction)
-    //angular_speed_ *= 0.99;
-//    angular_speed_ = 0;
-//    // Stop rotation when speed goes below threshold
-//    if (angular_speed_ < 0.01) {
-//        angular_speed_ = 0.0;
-//    } else {
-//        // Update rotation
-//        rotation_ = QQuaternion::fromAxisAndAngle(rotation_axis_, angular_speed_) * rotation_;
-
-//        // Request an update
-//        update();
-//    }
-}
-
 void Panel::initializeGL()
 {
     initializeOpenGLFunctions();
 
     glClearColor(128, 128, 128, 1);
 
-//    initShaders();
-//    initTextures();
-
     // Enable depth buffer
     glEnable(GL_DEPTH_TEST);
 
     // Enable back face culling
     glEnable(GL_CULL_FACE);
-
-    // Use QBasicTimer because its faster than QTimer
-//    timer_.start(12, this);
-}
-
-void Panel::initShaders()
-{
-    // Compile vertex shader
-//    if (!hand_program_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/hand.vert"))
-//        close();
-//    // Compile fragment shader
-//    if (!hand_program_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/hand.frag"))
-//        close();
-//    // Link shader pipeline
-//    if (!hand_program_.link())
-//        close();
-
-
-//    if (!default_program_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/default.vert"))
-//        close();
-//    // Compile fragment shader
-//    if (!default_program_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/default.frag"))
-//        close();
-//    // Link shader pipeline
-//    if (!default_program_.link())
-//        close();
-
-
-}
-
-void Panel::initTextures()
-{
-//    // Load cube.png image
-//    texture_ = new QOpenGLTexture(QImage(":/resource/images/handD.bmp").mirrored());
-
-//    // Set nearest filtering mode for texture minification
-//    texture_->setMinificationFilter(QOpenGLTexture::Nearest);
-
-//    // Set bilinear filtering mode for texture magnification
-//    texture_->setMagnificationFilter(QOpenGLTexture::Linear);
-
-//    // Wrap texture coordinates by repeating
-//    // f.ex. texture coordinate (1.1, 1.2) is same as (0.1, 0.2)
-    //    texture_->setWrapMode(QOpenGLTexture::Repeat);
 }
 
 void Panel::changeMeshVisible(int id)
@@ -185,13 +121,11 @@ void Panel::changeMeshVisible(int id)
         auxiliary_meshes_[id]->SetVisible(1 - auxiliary_meshes_[id]->IsVisible());
     else
         meshes_[id]->SetVisible(1 - meshes_[id]->IsVisible());
+    update();
 }
 
 void Panel::clearAuxiliaryMeshes()
 {
-//    for(auto it = auxiliary_meshes_.begin(); it!=auxiliary_meshes_.end();){
-//        it = auxiliary_meshes_.erase(it);
-//    }
     auxiliary_meshes_.clear();
 }
 
@@ -243,42 +177,11 @@ void Panel::paintGL()
     for(auto& it = mesh_map_.begin(); it != mesh_map_.end();it++){
         it->second->draw(matrix, projection_);
     }
-//    render->drawAll(matrix, projection_);
-
-    // Set modelview-projection matrix
-//    if(hand_mesh_){
-//        texture_->bind();
-//        // Bind shader pipeline for use
-//        if (!hand_program_.bind())
-//            close();
-//        hand_program_.setUniformValue("mvp_matrix", projection_ * matrix);
-//        hand_program_.setUniformValue("texture", 0);
-//        hand_mesh_->draw(&hand_program_);
-//    }
-
-
-//    if(auxiliary_meshes_.size()!=0){
-//        // Bind shader pipeline for use
-//        if (!default_program_.bind())
-//            close();
-
-//        // Use texture unit 0 which contains cube.png
-//        default_program_.setUniformValue("mvp_matrix", projection_ * matrix);
-//        default_program_.setUniformValue("texture", 0);
-
-
-//        // Draw cube geometry
-//        for(auto& mesh_:auxiliary_meshes_)
-//            mesh_->draw(&default_program_);
-//    }
-
 
 }
 
 
 void Panel::addMesh(unique_ptr<Mesh> mesh){
-//    auxiliary_meshes_.push_back(new RenderMesh(mesh));
-//    render->addMesh(mesh, QColor(255,0,0));
     mesh_map_[mesh.get()] = unique_ptr<RenderMesh>(new SimpleRenderMesh(mesh.get(), QColor(255,0,0)));
     auxiliary_meshes_.push_back(std::move(mesh));
 }
@@ -289,7 +192,6 @@ void Panel::setHandMesh(unique_ptr<Mesh> mesh)
         clearAuxiliaryMeshes();
     }
 
-//    render->addMesh(mesh, QString(":/resource/images/handD.bmp"));
     mesh_map_[mesh.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(mesh.get(), QString(":/resource/images/handD.bmp")));
     hand_mesh_ = std::move(mesh);
     updateAuxiliaryMeshes();
