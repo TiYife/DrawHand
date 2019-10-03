@@ -32,6 +32,7 @@ void Mesh::Update(std::vector<Vec3> p, std::vector<Vec3> n)
 {
     this->positions_ = p;
     this->normals_ = n;
+    changed_ = true;
 }
 
 Mesh Mesh::Transfrom(Transform t)
@@ -106,11 +107,27 @@ void Mesh::SetTransform(const Transform& t)
 {
     transform_ = t;
     use_transform = true;
+    changed_ = true;
+}
+
+void Mesh::SetVisible(bool visible)
+{
+    visible_ = visible;
 }
 
 const Transform& Mesh::GetTransform()
 {
     return transform_;
+}
+
+bool Mesh::IsVisible()
+{
+    return visible_;
+}
+
+bool Mesh::IsChanged()
+{
+    return changed_;
 }
 
 const std::string & Mesh::GetName()

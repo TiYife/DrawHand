@@ -42,6 +42,7 @@ public:
     void AddFace(const Face& f);
     void SetTransform(const Transform& t);
 
+    void SetVisible(bool visible);
 
     const std::string &GetName();
     const std::string &GetMtl();
@@ -52,6 +53,9 @@ public:
     const std::vector<Vec2>& GetUVs();
     const std::vector<Face>& GetFaces();
     const Transform& GetTransform();
+
+    bool IsVisible();
+    bool IsChanged();
 
     std::vector<int> FindUselessVertices();
     std::vector<int> FindLostIndices(Mesh mesh);
@@ -67,6 +71,8 @@ public:
     Transform transform_;
     std::string name_, mtl_file_path_, mtl_name_;
 
+    bool visible_{true};
+    bool changed_{false};
     bool use_transform{false};
     bool has_texture_{false};
 };

@@ -136,6 +136,12 @@ void TextureRenderMesh::draw(QMatrix4x4 view, QMatrix4x4 projection)
     if (!shader_->bind())
         return;
 
+    if(!mesh_->IsVisible())
+        return;
+
+    if(mesh_->IsChanged())
+        update();
+
     texture_->bind();
     Transform t = mesh_->GetTransform();
     QMat4 model = t.toQMat4();
@@ -219,6 +225,13 @@ void SimpleRenderMesh::draw(QMatrix4x4 view, QMatrix4x4 projection)
 {
     if (!shader_->bind())
         return;
+
+    if(!mesh_->IsVisible())
+        return;
+
+//    if(mesh_->IsChanged())
+        //update();
+
     Transform t = mesh_->GetTransform();
     QMat4 model = t.toQMat4();
 
