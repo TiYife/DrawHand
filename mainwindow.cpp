@@ -2,7 +2,6 @@
 #include <QtWidgets>
 #include <string>
 #include "mainwindow.h"
-#include "fileutil.h"
 
 MainWindow::MainWindow()
 {
@@ -141,6 +140,13 @@ void MainWindow::showHideHand()
     panel -> changeMeshVisible(-1);
 }
 
+void MainWindow::reload()
+{
+    const QString fileName = QFileDialog::getOpenFileName(this);
+    if (!fileName.isEmpty())
+        panel -> reloadMeshes(fileName);
+}
+
 void MainWindow::init()
 {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -195,7 +201,7 @@ void MainWindow::createActions()
     QAction *openAct = new QAction(openIcon, tr("&Open..."), this);
     openAct->setShortcuts(QKeySequence::Open);
     openAct->setStatusTip(tr("Open an existing file"));
-    connect(openAct, &QAction::triggered, this, &MainWindow::open);
+    connect(openAct, &QAction::triggered, this, &MainWindow::reload);
     fileMenu->addAction(openAct);
     fileToolBar->addAction(openAct);
 

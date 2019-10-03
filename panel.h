@@ -4,10 +4,9 @@
 #include <QOpenGLWidget>
 #include <QQuaternion>
 #include <QBasicTimer>
-//#include "render.h"
-#include <unordered_map>
 #include "rendermesh.h"
 #include "meshbuilders.h"
+#include "fileutil.h"
 
 
 class Panel : public QOpenGLWidget, protected QOpenGLFunctions
@@ -23,6 +22,7 @@ public:
     void addKeyIndices(const std::vector<int> & indices);
 
     void changeMeshVisible(int id);
+    void reloadMeshes(QString path);
 protected:
     void mousePressEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
@@ -33,6 +33,8 @@ protected:
     void initializeGL() override;
     void resizeGL(int w, int h) override;
     void paintGL() override;
+
+    void initMeshes();
 
 private:
     void clearAuxiliaryMeshes();

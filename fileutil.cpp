@@ -64,6 +64,123 @@ unique_ptr<Mesh> FileUtil::LoadObj(std::string filename, std::string objname) {
     return mesh;
 }
 
+unique_ptr<Mesh> FileUtil::LoadObj(QFile& file, string objname)
+{
+    unique_ptr<Mesh> mesh(new Mesh(objname));
+    string line, tag;
+    float x, y, z;
+    string sa, sb, sc;
+    unsigned a, b, c;
+    string mtl_file_path, mtl_name, group_name;
+
+    int num_v = 0;
+
+    file.open(QIODevice::ReadOnly);
+    ifstream in(::_fdopen(file.handle(), "r"));
+    if (!in) {
+        return unique_ptr<Mesh>(nullptr);
+    }
+    while (getline(in, line))
+    {
+        istringstream ss(line);
+        ss >> tag;
+        if (tag == "v") {
+            ss >> x >> y >> z;
+            mesh ->AddVertice(Vec3(x, y, z));
+            num_v++;
+        }
+        else if (tag == "vn") {
+            ss >> x >> y >> z;
+            mesh ->AddNormal(Vec3(x, y, z));
+        }
+        else if (tag == "vt") {
+            ss >> x >> y;
+            mesh ->AddUV({ x, y });
+        }
+        else if (tag == "f") {
+            ss >> sa >> sb >> sc;
+            a = b = c = 0;
+            for (int i = 0; sa[i] != '/'&&i<sa.length(); i++) {
+                a = a * 10 + sa[i] - '0';
+            }
+            for (int i = 0; sb[i] != '/'&&i<sb.length(); i++) {
+                b = b * 10 + sb[i] - '0';
+            }
+            for (int i = 0; sc[i] != '/'&&i<sc.length(); i++) {
+                c = c * 10 + sc[i] - '0';
+            }
+            //a = stoi(sa);  b = stoi(sb);  c = stoi(sc);
+            mesh ->AddFace({ a - 1u, b - 1u, c - 1u });
+        }
+        else if (tag == "mtllib") {
+            ss >> mtl_file_path;
+            mesh ->SetMtlFile(mtl_file_path);
+        }
+        else if (tag == "usemtl") {
+            ss >> mtl_name;
+            mesh ->SetMtl(mtl_name);
+        }
+        else if (tag == "g") {
+            ss >> group_name;//todo
+        }
+        tag = "";
+    }
+    in.close();
+    return mesh;
+}
+
+void FileUtil::LoadTransfroms(const string& filename, vector<Eigen::Vector3f> &vertex, vector<Eigen::Vector3f> &normal, vector<Transform> &list)
+{
+    real_t a, b, c;
+    real_t x, y, z, w;
+    string line, tag;
+
+    vertex.clear();
+    normal.clear();
+    list.clear();
+    list.resize(5);
+    ifstream in(filename);
+    if (!in) {
+        return;
+    }
+    while (getline(in, line))
+    {
+        istringstream ss(line);
+        ss >> tag;
+        if (tag == "vertex") {
+            ss >> x >> y >> z;
+            vertex.push_back(Vec3(x, y, z));
+        }
+        else if (tag == "normal") {
+            ss >> x >> y >> z;
+            normal.push_back(Vec3(x, y, z));
+        }
+        else if (tag == "ball") {
+            ss >> a >> b >> c >> x >> y >> z >> w;
+            list[0] = Transform(Quat(w,x,y,z), Vec3(a,b,c));
+        }
+        else if (tag == "cube") {
+            ss >> a >> b >> c >> x >> y >> z >> w;
+            list[1] = Transform(Quat(w,x,y,z), Vec3(a,b,c));
+        }
+        else if (tag == "banana") {
+            ss >> a >> b >> c >> x >> y >> z >> w;
+            list[2] = Transform(Quat(w,x,y,z), Vec3(a,b,c));
+        }
+        else if (tag == "torus") {
+            ss >> a >> b >> c >> x >> y >> z >> w;
+            list[3] = Transform(Quat(w,x,y,z), Vec3(a,b,c));
+        }
+        else if (tag == "cube2") {
+            ss >> a >> b >> c >> x >> y >> z >> w;
+            list[4] = Transform(Quat(w,x,y,z), Vec3(a,b,c));
+        }
+
+        tag = "";
+    }
+    in.close();
+}
+
 vector<vector<int>> FileUtil::LoadKeyIndices(QString filename)
 {
     vector<vector<int>> ans;

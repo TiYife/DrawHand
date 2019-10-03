@@ -114,6 +114,7 @@ void TextureRenderMesh::update()
 {
     if(!mesh_)
         return;
+    vertices_.resize(mesh_->positions_.size());
     QVec3 p,n;
     QVec2 t;
     Vec3 position;
@@ -126,7 +127,7 @@ void TextureRenderMesh::update()
         p = QVec3(position.x(), position.y(), position.z());
         n = QVec3(normal.x(), normal.y(), normal.z());
         t = QVec2(texcoords.x(), texcoords.y());
-        vertices_.push_back({p,n,t});
+        vertices_[i] = {p,n,t};
     }
 
 }
@@ -139,8 +140,12 @@ void TextureRenderMesh::draw(QMatrix4x4 view, QMatrix4x4 projection)
     if(!mesh_->IsVisible())
         return;
 
-    if(mesh_->IsChanged())
+    if(mesh_->IsChanged()){
         update();
+        arrayBuffer.release();
+        arrayBuffer.bind();
+        arrayBuffer.allocate(&vertices_[0], static_cast<int>(vertices_.size() * sizeof(RenderVertex)));
+    }
 
     texture_->bind();
     Transform t = mesh_->GetTransform();
@@ -153,6 +158,7 @@ void TextureRenderMesh::draw(QMatrix4x4 view, QMatrix4x4 projection)
 
     arrayBuffer.bind();
     indexBuffer.bind();
+
 
     quintptr offset = 0;
     int vertex_location = shader_->attributeLocation("a_position");
@@ -173,6 +179,7 @@ void TextureRenderMesh::draw(QMatrix4x4 view, QMatrix4x4 projection)
 
     texture_->release();
     shader_->release();
+    mesh_->SetChanged(false);
 }
 
 SimpleRenderMesh::SimpleRenderMesh(Mesh * mesh, QColor color):

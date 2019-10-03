@@ -111,6 +111,8 @@ void Panel::initializeGL()
 
     // Enable back face culling
     glEnable(GL_CULL_FACE);
+
+    initMeshes();
 }
 
 void Panel::changeMeshVisible(int id)
@@ -122,6 +124,19 @@ void Panel::changeMeshVisible(int id)
     else
         meshes_[id]->SetVisible(1 - meshes_[id]->IsVisible());
     update();
+}
+
+void Panel::reloadMeshes(QString path)
+{
+    vector<Vec3> vertex;
+    vector<Vec3> normal;
+    vector<Transform> list;
+    FileUtil::LoadTransfroms(path.toStdString(), vertex, normal, list);
+
+    hand_mesh_->Update(vertex, normal);
+    for(int i = 0; i < 5 ; i++ ){
+        meshes_[i]->Update(list[i]);
+    }
 }
 
 void Panel::clearAuxiliaryMeshes()
@@ -176,6 +191,23 @@ void Panel::paintGL()
     matrix.scale(scale_);
     for(auto& it = mesh_map_.begin(); it != mesh_map_.end();it++){
         it->second->draw(matrix, projection_);
+    }
+
+}
+
+void Panel::initMeshes()
+{
+
+    setHandMesh(FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/hand.obj", "hand"));
+    meshes_.push_back(FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/ball.obj", "ball"));
+    meshes_.push_back(FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/cube.obj", "cube"));
+    meshes_.push_back(FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/banana.obj", "banana"));
+    meshes_.push_back(FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/torus.obj", "torus"));
+    meshes_.push_back(FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/cube2.obj", "cube2"));
+
+    for(auto & mesh :meshes_){
+//        mesh->SetVisible(false);
+        mesh_map_[mesh.get()] = unique_ptr<RenderMesh>(new SimpleRenderMesh(mesh.get(), QColor(0,255,0)));
     }
 
 }

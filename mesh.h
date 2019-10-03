@@ -26,9 +26,9 @@ public:
     Mesh(const Mesh * mesh);
     ~Mesh();
 
-    void Update(std::vector<Vec3> p, std::vector<Vec3> n);
+    void Update(const std::vector<Vec3>& p, const std::vector<Vec3>& n);
+    void Update(const Transform& t);
 
-    Mesh Transfrom(Transform t);
     Mesh operator * (Transform t);
     void operator +=(const Mesh& mesh);
 
@@ -43,6 +43,7 @@ public:
     void SetTransform(const Transform& t);
 
     void SetVisible(bool visible);
+    void SetChanged(bool changed);
 
     const std::string &GetName();
     const std::string &GetMtl();

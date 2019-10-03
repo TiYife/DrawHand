@@ -28,14 +28,19 @@ Mesh::~Mesh()
     positions_.clear();
 }
 
-void Mesh::Update(std::vector<Vec3> p, std::vector<Vec3> n)
+void Mesh::Update(const std::vector<Vec3>& p, const std::vector<Vec3>& n)
 {
     this->positions_ = p;
     this->normals_ = n;
     changed_ = true;
 }
 
-Mesh Mesh::Transfrom(Transform t)
+void Mesh::Update(const Transform& t)
+{
+    transform_ = t;
+}
+
+Mesh Mesh::operator*(Transform t)
 {
     Mesh mesh(this->name_);
     mesh.faces_ = this->faces_;
@@ -48,11 +53,6 @@ Mesh Mesh::Transfrom(Transform t)
         mesh.normals_.push_back(t * n);
     }
     return mesh;
-}
-
-Mesh Mesh::operator*(Transform t)
-{
-    return this->Transfrom(t);
 }
 
 void Mesh::operator+=(const Mesh & mesh)
@@ -113,6 +113,11 @@ void Mesh::SetTransform(const Transform& t)
 void Mesh::SetVisible(bool visible)
 {
     visible_ = visible;
+}
+
+void Mesh::SetChanged(bool changed)
+{
+    changed_ = changed;
 }
 
 const Transform& Mesh::GetTransform()

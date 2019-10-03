@@ -2,6 +2,7 @@
 #define FILEUTIL_H
 #include <fstream>
 #include <string>
+#include <unordered_map>
 #include <QtCore>
 #include <QFile>
 #include <QStringList>
@@ -15,6 +16,10 @@ enum ObjectType {
 class FileUtil{
 public:
     static unique_ptr<Mesh> LoadObj(std::string filename, string objname);
+
+    static unique_ptr<Mesh> LoadObj(QFile& file, string objname);
+
+    static void LoadTransfroms(const string& filename, vector<Vec3>& vertex, vector<Vec3>& normal, vector<Transform>& list);
 
     static vector<vector<int>> LoadKeyIndices(QString filename);
 

@@ -40,6 +40,7 @@ private slots:
     void findKeyIndices();
     void drawBall();
     void showHideHand();
+    void reload();
 
 private:
     enum { MaxRecentFiles = 5 };
