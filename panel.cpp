@@ -1,6 +1,5 @@
 #include <QMouseEvent>
 #include "panel.h"
-#include "meshbuilders.h"
 
 Panel::Panel(QWidget *parent) :
     QOpenGLWidget(parent),
@@ -188,6 +187,7 @@ void Panel::clearAuxiliaryMeshes()
 
 void Panel::updateAuxiliaryMeshes()
 {
+    unique_ptr<Mesh> mesh;
     for(auto & indices : hand_key_indices){
         Vec3 pos = Vec3(0,0,0);
         for(auto& i: indices){
@@ -196,7 +196,9 @@ void Panel::updateAuxiliaryMeshes()
 
         }
         pos/=indices.size();
-        auxiliary_meshes_.push_back(std::move(MeshBuilders::CreateSphere(pos, 15)));
+        mesh = std::move(MeshBuilders::CreateSphere(pos, 15));
+        mesh_map_[mesh.get()] = unique_ptr<RenderMesh>(new SimpleRenderMesh(mesh.get(), QColor(255,0,0)));
+        auxiliary_meshes_.push_back(std::move(mesh));
     }
 
 }
@@ -264,22 +266,22 @@ void Panel::paintGL()
 }
 
 
-void Panel::addMesh(Mesh * mesh){
+void Panel::addMesh(unique_ptr<Mesh> mesh){
 //    auxiliary_meshes_.push_back(new RenderMesh(mesh));
 //    render->addMesh(mesh, QColor(255,0,0));
-    mesh_map_[mesh] = unique_ptr<RenderMesh>(new SimpleRenderMesh(mesh, QColor(255,0,0)));
-    auxiliary_meshes_.push_back(unique_ptr<Mesh>(mesh));
+    mesh_map_[mesh.get()] = unique_ptr<RenderMesh>(new SimpleRenderMesh(mesh.get(), QColor(255,0,0)));
+    auxiliary_meshes_.push_back(std::move(mesh));
 }
 
-void Panel::setHandMesh(Mesh *mesh)
+void Panel::setHandMesh(unique_ptr<Mesh> mesh)
 {
     if(hand_mesh_!=nullptr){
         clearAuxiliaryMeshes();
     }
 
 //    render->addMesh(mesh, QString(":/resource/images/handD.bmp"));
-    mesh_map_[mesh] = unique_ptr<RenderMesh>(new TextureRenderMesh(mesh, QString(":/resource/images/handD.bmp")));
-    hand_mesh_ = unique_ptr<Mesh>(mesh);
+    mesh_map_[mesh.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(mesh.get(), QString(":/resource/images/handD.bmp")));
+    hand_mesh_ = std::move(mesh);
     updateAuxiliaryMeshes();
 }
 

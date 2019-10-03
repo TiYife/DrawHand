@@ -7,6 +7,8 @@
 //#include "render.h"
 #include <unordered_map>
 #include "rendermesh.h"
+#include "meshbuilders.h"
+
 
 class Panel : public QOpenGLWidget, protected QOpenGLFunctions
 {
@@ -16,8 +18,8 @@ public:
     explicit Panel(QWidget *parent = 0);
     ~Panel();
 
-    void addMesh(Mesh * mesh);
-    void setHandMesh(Mesh * mesh);
+    void addMesh(unique_ptr<Mesh> mesh);
+    void setHandMesh(unique_ptr<Mesh> mesh);
     void addKeyIndices(const std::vector<int> & indices);
 protected:
     void mousePressEvent(QMouseEvent *e) override;

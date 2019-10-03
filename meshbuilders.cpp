@@ -53,7 +53,7 @@ unique_ptr<Mesh> MeshBuilders::CreateSphere(Vec3 pos, real_t r)
                     mesh->faces_.push_back({a,b,c});
 
 
-                    mesh->faces_.push_back({ver_count -1-a,ver_count -1-c,ver_count -1-b});
+                    mesh->faces_.push_back({ver_count -2-a,ver_count -2-c,ver_count -2-b});
                 }
                 continue;
             }

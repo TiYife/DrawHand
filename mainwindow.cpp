@@ -121,14 +121,19 @@ void MainWindow::findKeyIndices()
 
     string s = "D:/Documents/Projects/QT/DrawHand/resource/ori-objs/hand.obj";
     string s2 = fileName.toStdString();
-    Mesh ori = FileUtil::LoadObj(s, "");
+    unique_ptr<Mesh> ori = FileUtil::LoadObj(s, "");
     std::cout<<s2<<std::endl;
-    Mesh mesh = FileUtil::LoadObj(s2, "");
+    unique_ptr<Mesh> mesh = FileUtil::LoadObj(s2, "");
 
-    std::vector<int> indices = ori.FindLostIndices(mesh);
+    std::vector<int> indices = ori->FindLostIndices(mesh.get());
     for(auto & i: indices){
         std::cout<<i<<std::endl;
     }
+}
+
+void MainWindow::drawBall()
+{
+    panel->addMesh(MeshBuilders::CreateSphere(Vec3(0,0,0), 0.1));
 }
 
 void MainWindow::init()
@@ -240,6 +245,14 @@ void MainWindow::createActions()
     toolMenu->addAction(auxAct);
     toolToolBar->addAction(auxAct);
 
+    const QIcon ballIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
+    QAction *drawAct = new QAction(ballIcon, tr("Cu&t"), this);
+    drawAct->setShortcuts(QKeySequence::Cut);
+    drawAct->setStatusTip(tr("get joint indices"));
+    connect(drawAct, &QAction::triggered, this, &MainWindow::drawBall);
+    toolMenu->addAction(drawAct);
+    toolToolBar->addAction(drawAct);
+
     const QIcon findIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
     QAction *findAct = new QAction(findIcon, tr("Cu&t"), this);
     findAct->setShortcuts(QKeySequence::Cut);
@@ -333,11 +346,11 @@ void MainWindow::loadFile(const QString &fileName)
 {
 //    std::string s = fileName.toLocal8Bit().constData();
     QString s = fileName;
-    Mesh * mesh = FileUtil::LoadObj(s.toStdString(), "");
+    unique_ptr<Mesh> mesh = FileUtil::LoadObj(s.toStdString(), "");
 
     //todo
 //    panel -> addMesh(mesh);
-    panel->setHandMesh(mesh);
+    panel->setHandMesh(std::move(mesh));
 //    QFile file(fileName);
 //    if (!file.open(QFile::ReadOnly | QFile::Text)) {
 //        QMessageBox::warning(this, tr("SDI"),

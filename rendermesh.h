@@ -27,7 +27,6 @@ public:
 
 protected:
     Mesh * mesh_;
-    unique_ptr<QOpenGLShaderProgram> shader_;
     std::vector<RenderVertex> vertices_;
     QOpenGLBuffer arrayBuffer;
     QOpenGLBuffer indexBuffer;
@@ -47,6 +46,7 @@ public:
 
 private:
     unique_ptr<QOpenGLTexture> texture_;
+    unique_ptr<QOpenGLShaderProgram> shader_;
 };
 
 
@@ -62,6 +62,7 @@ public:
 
 private:
     QColor color_;
+    unique_ptr<QOpenGLShaderProgram> shader_;
 };
 
 #endif // RENDERMESH_H

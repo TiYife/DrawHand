@@ -14,7 +14,7 @@ enum ObjectType {
 
 class FileUtil{
 public:
-    static Mesh * LoadObj(std::string filename, string objname);
+    static unique_ptr<Mesh> LoadObj(std::string filename, string objname);
 
     static vector<vector<int>> LoadKeyIndices(QString filename);
 

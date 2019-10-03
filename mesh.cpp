@@ -190,8 +190,9 @@ float CalcAngleBetween(const Vec3 &dir_a, const Vec3 &dir_b) {
 
 void Mesh::CalculateNormal()
 {
+    normals_.resize(positions_.size());
     for(auto & n : normals_){
-        n=Vec3(0);
+        n=Vec3(0,0,0);
     }
     Vec3 pos[3];
     Vec3 dir10,dir20;

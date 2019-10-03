@@ -164,6 +164,9 @@ void TextureRenderMesh::draw(QMatrix4x4 view, QMatrix4x4 projection)
     shader_ -> setAttributeBuffer(texcoord_location, GL_FLOAT, offset, 2, sizeof(RenderVertex));
 
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mesh_->faces_.size() * sizeof(Face)), GL_UNSIGNED_INT, 0);
+
+    texture_->release();
+    shader_->release();
 }
 
 SimpleRenderMesh::SimpleRenderMesh(Mesh * mesh, QColor color):
@@ -183,9 +186,9 @@ SimpleRenderMesh::~SimpleRenderMesh()
 void SimpleRenderMesh::initshader()
 {
     shader_ = unique_ptr<QOpenGLShaderProgram>(new QOpenGLShaderProgram());
-    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/hand.vert"))
+    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/default.vert"))
         return;
-    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/hand.frag"))
+    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/default.frag"))
         return;
     if (!shader_->link())
         return;
@@ -243,6 +246,9 @@ void SimpleRenderMesh::draw(QMatrix4x4 view, QMatrix4x4 projection)
     shader_ -> enableAttributeArray(texcoord_location);
     shader_ -> setAttributeBuffer(texcoord_location, GL_FLOAT, offset, 2, sizeof(RenderVertex));
 
-
+//    glPolygonMode(GL_BACK, GL_LINE);
+//    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mesh_->faces_.size() * sizeof(Face)), GL_UNSIGNED_INT, 0);
+
+    shader_->release();
 }

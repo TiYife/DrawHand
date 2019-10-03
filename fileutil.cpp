@@ -1,8 +1,8 @@
 #include "fileutil.h"
 using namespace std;
 
-Mesh * FileUtil::LoadObj(std::string filename, std::string objname) {
-    Mesh *mesh;
+unique_ptr<Mesh> FileUtil::LoadObj(std::string filename, std::string objname) {
+    unique_ptr<Mesh> mesh(new Mesh(objname));
     string line, tag;
     float x, y, z;
     string sa, sb, sc;
@@ -12,8 +12,8 @@ Mesh * FileUtil::LoadObj(std::string filename, std::string objname) {
     int num_v = 0;
 
     ifstream in(filename);
-    if (in) {
-        mesh = new Mesh(objname);
+    if (!in) {
+        return unique_ptr<Mesh>(nullptr);
     }
     while (getline(in, line))
     {

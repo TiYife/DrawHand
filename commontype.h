@@ -22,7 +22,7 @@
 
 
 #define M_PI 3.141592653579
-#define M_PI_2 M_PI*M_PI
+#define M_PI_2 M_PI/2
 
 static QVec3 ToQType(const Vec3& e){
     QVec3 q;

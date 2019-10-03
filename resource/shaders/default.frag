@@ -1,7 +1,7 @@
 uniform vec3 objectColor;
 
-varying vec2 v_normal;
-varying vec3 v_pos;
+varying vec3 v_normal;
+//varying vec3 v_pos;
 
 void main()
 {
@@ -9,6 +9,6 @@ void main()
     vec3 lightDir = vec3(0,0,-1);
     float diff = max(dot(norm, lightDir), 0.3);
 
-//    gl_FragColor = diff * objectColor;
-    gl_FragColor = vec4(255,0,0, 1.0);
+//    gl_FragColor = vec4(diff * objectColor, 1.0);
+    gl_FragColor = vec4(1.0,0.0,0.0, 1.0);
 }
