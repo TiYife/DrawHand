@@ -15,5 +15,8 @@
         <file>resource/images/open.png</file>
         <file>resource/images/paste.png</file>
         <file>resource/images/save.png</file>
+        <file>resource/images/bananaD.bmp</file>
+        <file>resource/images/cube2D.bmp</file>
+        <file>resource/images/cubeD.bmp</file>
     </qresource>
 </RCC>

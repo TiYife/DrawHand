@@ -1,4 +1,5 @@
 #include <QMouseEvent>
+#include <QGuiApplication>
 #include "panel.h"
 
 Panel::Panel(QWidget *parent) :
@@ -8,12 +9,14 @@ Panel::Panel(QWidget *parent) :
     press(false),
     scale_(0.01),
     offset_x_(0),
-    offset_y_(-1.5),
+    offset_y_(0),
     offset_z_(-5),
     hand_mesh_(nullptr)
 {
 //    render = unique_ptr<Render>(new Render());
     this->grabKeyboard();
+     makeCurrent();
+
 }
 
 Panel::~Panel()
@@ -115,14 +118,14 @@ void Panel::initializeGL()
     initMeshes();
 }
 
-void Panel::changeMeshVisible(int id)
+void Panel::setMeshVisible(int id, bool show)
 {
     if(id == -1)
-        hand_mesh_->SetVisible(1 - hand_mesh_->IsVisible());
+        hand_mesh_->SetVisible(show);
     else if(id == -2)
-        auxiliary_meshes_[id]->SetVisible(1 - auxiliary_meshes_[id]->IsVisible());
+        auxiliary_meshes_[id]->SetVisible(show);
     else
-        meshes_[id]->SetVisible(1 - meshes_[id]->IsVisible());
+        meshes_[id]->SetVisible(show);
     update();
 }
 
@@ -137,6 +140,26 @@ void Panel::reloadMeshes(QString path)
     for(int i = 0; i < 5 ; i++ ){
         meshes_[i]->Update(list[i]);
     }
+    updateAuxiliaryMeshes();
+}
+
+void Panel::showDepthMap()
+{
+    for(auto& it = mesh_map_.begin(); it !=mesh_map_.end(); it++){
+        it->second->changeRenderMode();
+    }
+    update();
+}
+
+QImage Panel::saveScreen()
+{
+//    GLubyte *data = malloc(components * width * height);
+//    if( data ) {
+//        glReadPixels(0, 0, width, height, format, GL_UNSIGNED_BYTE, data);
+//    }
+
+//    return QImage(data, size().width(), size().height(), QImage::Format_RGB888);
+    return QImage();
 }
 
 void Panel::clearAuxiliaryMeshes()
@@ -144,7 +167,7 @@ void Panel::clearAuxiliaryMeshes()
     auxiliary_meshes_.clear();
 }
 
-void Panel::updateAuxiliaryMeshes()
+void Panel::initAuxiliaryMeshes()
 {
     unique_ptr<Mesh> mesh;
     for(auto & indices : hand_key_indices){
@@ -155,9 +178,27 @@ void Panel::updateAuxiliaryMeshes()
 
         }
         pos/=indices.size();
-        mesh = std::move(MeshBuilders::CreateSphere(pos, 15));
+        mesh = std::move(MeshBuilders::CreateSphere(pos, 10));
         mesh_map_[mesh.get()] = unique_ptr<RenderMesh>(new SimpleRenderMesh(mesh.get(), QColor(255,0,0)));
         auxiliary_meshes_.push_back(std::move(mesh));
+    }
+}
+
+void Panel::updateAuxiliaryMeshes()
+{
+    int i = 0;
+    for(auto & indices : hand_key_indices){
+        Vec3 pos = Vec3(0,0,0);
+        for(auto& i: indices){
+            //todo mesh_
+            pos+=hand_mesh_->positions_[i];
+
+        }
+        pos/=indices.size();
+        Transform t;
+        t.setTranslate(pos);
+        auxiliary_meshes_[i]->SetTransform(t);
+        i++;
     }
 
 }
@@ -193,23 +234,37 @@ void Panel::paintGL()
         it->second->draw(matrix, projection_);
     }
 
+    saveScreen();
 }
 
 void Panel::initMeshes()
 {
 
     setHandMesh(FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/hand.obj", "hand"));
-    meshes_.push_back(FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/ball.obj", "ball"));
-    meshes_.push_back(FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/cube.obj", "cube"));
-    meshes_.push_back(FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/banana.obj", "banana"));
-    meshes_.push_back(FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/torus.obj", "torus"));
-    meshes_.push_back(FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/cube2.obj", "cube2"));
 
-    for(auto & mesh :meshes_){
-//        mesh->SetVisible(false);
-        mesh_map_[mesh.get()] = unique_ptr<RenderMesh>(new SimpleRenderMesh(mesh.get(), QColor(0,255,0)));
-    }
+    auto ball = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/ball.obj", "ball");
+    mesh_map_[ball.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(ball.get(), QString(":/resource/images/ballD.bmp")));
+    meshes_.push_back(std::move(ball));
 
+    auto cube = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/cube.obj", "cube");
+    mesh_map_[cube.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(cube.get(), QString(":/resource/images/cubeD.bmp")));
+    //cube->SetVisible(false);
+    meshes_.push_back(std::move(cube));
+
+    auto banana = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/banana.obj", "banana");
+    mesh_map_[banana.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(banana.get(), QString(":/resource/images/bananaD.bmp")));
+    //banana->SetVisible(false);
+    meshes_.push_back(std::move(banana));
+
+    auto torus = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/torus.obj", "torus");
+    mesh_map_[torus.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(torus.get(), QString(":/resource/images/torusD.bmp")));
+    torus->SetVisible(false);
+    meshes_.push_back(std::move(torus));
+
+    auto cube2 = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/cube2.obj", "cube2");
+    mesh_map_[cube2.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(cube2.get(), QString(":/resource/images/cube2D.bmp")));
+    //cube2->SetVisible(false);
+    meshes_.push_back(std::move(cube2));
 }
 
 
@@ -232,5 +287,5 @@ void Panel::setHandMesh(unique_ptr<Mesh> mesh)
 void Panel::addKeyIndices(const std::vector<int> &indices)
 {
     hand_key_indices.push_back(indices);
-    updateAuxiliaryMeshes();
+    initAuxiliaryMeshes();
 }

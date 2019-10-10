@@ -4,6 +4,7 @@
 #include <QOpenGLWidget>
 #include <QQuaternion>
 #include <QBasicTimer>
+#include <QOpenGLFramebufferObject>
 #include "rendermesh.h"
 #include "meshbuilders.h"
 #include "fileutil.h"
@@ -21,8 +22,11 @@ public:
     void setHandMesh(unique_ptr<Mesh> mesh);
     void addKeyIndices(const std::vector<int> & indices);
 
-    void changeMeshVisible(int id);
+    void setMeshVisible(int id, bool show);
     void reloadMeshes(QString path);
+
+    void showDepthMap();
+    QImage saveScreen();
 protected:
     void mousePressEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
@@ -38,6 +42,7 @@ protected:
 
 private:
     void clearAuxiliaryMeshes();
+    void initAuxiliaryMeshes();
     void updateAuxiliaryMeshes();
 
 
@@ -48,6 +53,8 @@ private:
 //    QOpenGLShaderProgram default_program_;
 
 //    QOpenGLTexture * texture_;
+    QOpenGLFramebufferObject  *render_fbo;
+    QOpenGLFramebufferObject  *texture_fbo;
 
     QMat4 projection_;
 

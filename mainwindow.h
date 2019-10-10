@@ -39,7 +39,15 @@ private slots:
     void addAuxiliaryShapes();
     void findKeyIndices();
     void drawBall();
-    void showHideHand();
+
+    void showDepthMap();
+    void showHand(bool checked);
+    void showBall(bool checked);
+    void showCube(bool checked);
+    void showBanana(bool checked);
+    void showCube2(bool checked);
+    void showTorus(bool checked);
+
     void reload();
 
 private:

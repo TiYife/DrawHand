@@ -1,7 +1,7 @@
 uniform vec3 objectColor;
 
 varying vec3 v_normal;
-//varying vec3 v_pos;
+varying vec3 v_pos;
 
 void main()
 {

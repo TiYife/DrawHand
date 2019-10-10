@@ -23,13 +23,20 @@ public:
     virtual void draw(QMat4 view, QMat4 projection) = 0;
 
     void initialize();
+    void changeRenderMode();
 
+protected:
+    virtual void initColorShader() = 0;
+    virtual void initDepthShader() = 0;
 
 protected:
     Mesh * mesh_;
     std::vector<RenderVertex> vertices_;
     QOpenGLBuffer arrayBuffer;
     QOpenGLBuffer indexBuffer;
+    unique_ptr<QOpenGLShaderProgram> shader_;
+
+    bool depth_mode_ = 0;
 };
 
 
@@ -39,14 +46,16 @@ public:
     TextureRenderMesh(Mesh * mesh, QString textrue_path);
     virtual ~TextureRenderMesh();
 
-    void initshader();
-    void inittexture(QString textrue_path);
+
+    void initTexture(QString textrue_path);
     void update();
+
+    virtual void initColorShader() override;
+    virtual void initDepthShader() override;
     virtual void draw(QMat4 view, QMat4 projection) override;
 
 private:
     unique_ptr<QOpenGLTexture> texture_;
-    unique_ptr<QOpenGLShaderProgram> shader_;
 };
 
 
@@ -56,13 +65,14 @@ public:
     SimpleRenderMesh(Mesh * mesh, QColor color);
     virtual ~SimpleRenderMesh();
 
-    void initshader();
     void update();
+
+    virtual void initColorShader() override;
+    virtual void initDepthShader() override;
     virtual void draw(QMat4 view, QMat4 projection) override;
 
 private:
     QColor color_;
-    unique_ptr<QOpenGLShaderProgram> shader_;
 };
 
 #endif // RENDERMESH_H

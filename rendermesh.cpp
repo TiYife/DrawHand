@@ -25,6 +25,19 @@ void RenderMesh::initialize()
     indexBuffer.allocate(&mesh_->faces_[0],static_cast<int>(mesh_->faces_.size() * sizeof(Face)));
 }
 
+void RenderMesh::changeRenderMode()
+{
+    depth_mode_ = !depth_mode_;
+
+    shader_.release();
+    if(depth_mode_){
+        initDepthShader();
+    }
+    else{
+        initColorShader();
+    }
+}
+
 //void RenderMesh::draw(QMat4 view, QMat4 projection)
 //{
 //    if (!shader_->bind())
@@ -82,8 +95,8 @@ TextureRenderMesh::TextureRenderMesh(Mesh * mesh, QString textrue_path):
 {
     update();
     initialize();
-    inittexture(textrue_path);
-    initshader();
+    initTexture(textrue_path);
+    initColorShader();
 }
 
 TextureRenderMesh::~TextureRenderMesh()
@@ -91,18 +104,30 @@ TextureRenderMesh::~TextureRenderMesh()
 
 }
 
-void TextureRenderMesh::initshader()
+void TextureRenderMesh::initColorShader()
 {
     shader_ = unique_ptr<QOpenGLShaderProgram>(new QOpenGLShaderProgram());
-    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/hand.vert"))
+    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/texture.vert"))
         return;
-    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/hand.frag"))
+    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/texture.frag"))
         return;
     if (!shader_->link())
         return;
 }
 
-void TextureRenderMesh::inittexture(QString textrue_path)
+
+void TextureRenderMesh::initDepthShader()
+{
+    shader_ = unique_ptr<QOpenGLShaderProgram>(new QOpenGLShaderProgram());
+    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/texture.vert"))
+        return;
+    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/depth.frag"))
+        return;
+    if (!shader_->link())
+        return;
+}
+
+void TextureRenderMesh::initTexture(QString textrue_path)
 {
     texture_ = unique_ptr<QOpenGLTexture>(new QOpenGLTexture(QImage(textrue_path).mirrored()));
     texture_->setMinificationFilter(QOpenGLTexture::Nearest);
@@ -131,6 +156,7 @@ void TextureRenderMesh::update()
     }
 
 }
+
 
 void TextureRenderMesh::draw(QMatrix4x4 view, QMatrix4x4 projection)
 {
@@ -188,7 +214,7 @@ SimpleRenderMesh::SimpleRenderMesh(Mesh * mesh, QColor color):
     color_ = color;
     update();
     initialize();
-    initshader();
+    initColorShader();
 }
 
 SimpleRenderMesh::~SimpleRenderMesh()
@@ -196,12 +222,23 @@ SimpleRenderMesh::~SimpleRenderMesh()
 
 }
 
-void SimpleRenderMesh::initshader()
+void SimpleRenderMesh::initColorShader()
 {
     shader_ = unique_ptr<QOpenGLShaderProgram>(new QOpenGLShaderProgram());
-    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/default.vert"))
+    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/simple.vert"))
         return;
-    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/default.frag"))
+    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/simple.frag"))
+        return;
+    if (!shader_->link())
+        return;
+}
+
+void SimpleRenderMesh::initDepthShader()
+{
+    shader_ = unique_ptr<QOpenGLShaderProgram>(new QOpenGLShaderProgram());
+    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/simple.vert"))
+        return;
+    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/depth.frag"))
         return;
     if (!shader_->link())
         return;
