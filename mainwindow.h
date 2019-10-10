@@ -40,7 +40,7 @@ private slots:
     void findKeyIndices();
     void drawBall();
 
-    void showDepthMap();
+    void showDepthMap(bool checked);
     void showHand(bool checked);
     void showBall(bool checked);
     void showCube(bool checked);

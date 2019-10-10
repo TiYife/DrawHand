@@ -25,7 +25,7 @@ public:
     void setMeshVisible(int id, bool show);
     void reloadMeshes(QString path);
 
-    void showDepthMap();
+    void showDepthMap(bool depth_mode);
     QImage saveScreen();
 protected:
     void mousePressEvent(QMouseEvent *e) override;

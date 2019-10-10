@@ -25,12 +25,10 @@ void RenderMesh::initialize()
     indexBuffer.allocate(&mesh_->faces_[0],static_cast<int>(mesh_->faces_.size() * sizeof(Face)));
 }
 
-void RenderMesh::changeRenderMode()
+void RenderMesh::DepthMode(bool depth_mode)
 {
-    depth_mode_ = !depth_mode_;
-
     shader_.release();
-    if(depth_mode_){
+    if(depth_mode){
         initDepthShader();
     }
     else{

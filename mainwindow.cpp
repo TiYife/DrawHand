@@ -136,9 +136,9 @@ void MainWindow::drawBall()
     panel->addMesh(MeshBuilders::CreateSphere(Vec3(0,0,0), 0.1));
 }
 
-void MainWindow::showDepthMap()
+void MainWindow::showDepthMap(bool checked)
 {
-    panel->showDepthMap();
+    panel->showDepthMap(checked);
 }
 
 void MainWindow::showHand(bool checked)
@@ -277,8 +277,8 @@ void MainWindow::createActions()
 
 
 
-
-
+// view munu
+{
     QMenu *viewMenu = menuBar()->addMenu(tr("&View"));
     QToolBar *viewToolBar = addToolBar(tr("View"));
 
@@ -286,6 +286,8 @@ void MainWindow::createActions()
     QAction *depthAct = new QAction(depthIcon, tr("depth"), this);
     depthAct->setShortcuts(QKeySequence::Cut);
     depthAct->setStatusTip(tr("show depth"));
+    depthAct->setCheckable(true);
+    depthAct->setChecked(false);
     connect(depthAct, &QAction::triggered, this, &MainWindow::showDepthMap);
     viewMenu->addAction(depthAct);
     viewToolBar->addAction(depthAct);
@@ -316,7 +318,7 @@ void MainWindow::createActions()
     showcubeAct->setShortcuts(QKeySequence::Cut);
     showcubeAct->setStatusTip(tr("show cube"));
     showcubeAct->setCheckable(true);
-    showcubeAct->setChecked(true);
+    showcubeAct->setChecked(false);
     connect(showcubeAct, &QAction::triggered, this, &MainWindow::showCube);
     viewMenu->addAction(showcubeAct);
     viewToolBar->addAction(showcubeAct);
@@ -326,7 +328,7 @@ void MainWindow::createActions()
     showbananaAct->setShortcuts(QKeySequence::Cut);
     showbananaAct->setStatusTip(tr("show banana"));
     showbananaAct->setCheckable(true);
-    showbananaAct->setChecked(true);
+    showbananaAct->setChecked(false);
     connect(showbananaAct, &QAction::triggered, this, &MainWindow::showBanana);
     viewMenu->addAction(showbananaAct);
     viewToolBar->addAction(showbananaAct);
@@ -336,7 +338,7 @@ void MainWindow::createActions()
     showtorusAct->setShortcuts(QKeySequence::Cut);
     showtorusAct->setStatusTip(tr("show torus"));
     showtorusAct->setCheckable(true);
-    showtorusAct->setChecked(true);
+    showtorusAct->setChecked(false);
     connect(showtorusAct, &QAction::triggered, this, &MainWindow::showTorus);
     viewMenu->addAction(showtorusAct);
     viewToolBar->addAction(showtorusAct);
@@ -346,11 +348,11 @@ void MainWindow::createActions()
     showcube2Act->setShortcuts(QKeySequence::Cut);
     showcube2Act->setStatusTip(tr("show cube2"));
     showcube2Act->setCheckable(true);
-    showcube2Act->setChecked(true);
+    showcube2Act->setChecked(false);
     connect(showcube2Act, &QAction::triggered, this, &MainWindow::showCube2);
     viewMenu->addAction(showcube2Act);
     viewToolBar->addAction(showcube2Act);
-
+}
 
     QMenu *toolMenu = menuBar()->addMenu(tr("&Tool"));
     QToolBar *toolToolBar = addToolBar(tr("Tool"));

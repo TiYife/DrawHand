@@ -143,10 +143,10 @@ void Panel::reloadMeshes(QString path)
     updateAuxiliaryMeshes();
 }
 
-void Panel::showDepthMap()
+void Panel::showDepthMap(bool depth_mode)
 {
     for(auto& it = mesh_map_.begin(); it !=mesh_map_.end(); it++){
-        it->second->changeRenderMode();
+        it->second->DepthMode(depth_mode);
     }
     update();
 }
@@ -248,12 +248,12 @@ void Panel::initMeshes()
 
     auto cube = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/cube.obj", "cube");
     mesh_map_[cube.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(cube.get(), QString(":/resource/images/cubeD.bmp")));
-    //cube->SetVisible(false);
+    cube->SetVisible(false);
     meshes_.push_back(std::move(cube));
 
     auto banana = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/banana.obj", "banana");
     mesh_map_[banana.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(banana.get(), QString(":/resource/images/bananaD.bmp")));
-    //banana->SetVisible(false);
+    banana->SetVisible(false);
     meshes_.push_back(std::move(banana));
 
     auto torus = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/torus.obj", "torus");
@@ -263,7 +263,7 @@ void Panel::initMeshes()
 
     auto cube2 = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/cube2.obj", "cube2");
     mesh_map_[cube2.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(cube2.get(), QString(":/resource/images/cube2D.bmp")));
-    //cube2->SetVisible(false);
+    cube2->SetVisible(false);
     meshes_.push_back(std::move(cube2));
 }
 

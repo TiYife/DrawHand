@@ -23,7 +23,7 @@ public:
     virtual void draw(QMat4 view, QMat4 projection) = 0;
 
     void initialize();
-    void changeRenderMode();
+    void DepthMode(bool depth_mode_);
 
 protected:
     virtual void initColorShader() = 0;
@@ -35,8 +35,6 @@ protected:
     QOpenGLBuffer arrayBuffer;
     QOpenGLBuffer indexBuffer;
     unique_ptr<QOpenGLShaderProgram> shader_;
-
-    bool depth_mode_ = 0;
 };
 
 
