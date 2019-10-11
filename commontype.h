@@ -50,7 +50,7 @@ static QQuat ToQType(const Quat& e){
 
 
 static QMat4 ToQType(const Mat4& e){
-    QMatrix4x4 qmat;
+    QMat4 qmat;
     real_t * data = new real_t[16];
     for(int i = 0; i < 4; i++){
         for(int j = 0; j < 4; j++){
@@ -58,6 +58,17 @@ static QMat4 ToQType(const Mat4& e){
         }
     }
     return QMat4(data);
+}
+
+static Mat4 ToEType(const QMat4& q){
+    Mat4 mat;
+    real_t * data = new real_t[16];
+    for(int i = 0; i < 4; i++){
+        for(int j = 0; j < 4; j++){
+            data[4*i+j] = q(i,j);
+        }
+    }
+    return Mat4(data);
 }
 
 

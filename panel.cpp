@@ -1,5 +1,6 @@
 #include <QMouseEvent>
 #include <QGuiApplication>
+#include <iostream>
 #include "panel.h"
 
 Panel::Panel(QWidget *parent) :
@@ -205,17 +206,40 @@ void Panel::updateAuxiliaryMeshes()
 
 void Panel::resizeGL(int w, int h)
 {
-    // Calculate aspect ratio
-    qreal aspect = qreal(w) / qreal(h ? h : 1);
-
     // Set near plane to 3.0, far plane to 7.0, field of view 45 degrees
-    const qreal zNear = 3.0, zFar = 10.0, fov = 45.0;
+    const qreal zNear = 1, zFar = 1000, fov = 45.0;
 
-    // Reset projection
-    projection_.setToIdentity();
+//    // Calculate aspect ratio
+//    qreal aspect = qreal(w) / qreal(h ? h : 1);
 
-    // Set perspective projection
-    projection_.perspective(fov, aspect, zNear, zFar);
+//    // Reset projection
+//    projection_.setToIdentity();
+
+//    // Set perspective projection
+//    projection_.perspective(fov, aspect, zNear, zFar);
+
+
+        float fx = cameraParam.fx * w / 640;
+        float fy = cameraParam.fy * h / 480;
+        float cx = cameraParam.cx * w / 640;
+        float cy = cameraParam.cy * h / 480;
+
+        projection_.setToIdentity();
+
+        projection_(0, 0) = 2 * fx / w;
+        projection_(2, 0) = (2 * cx - w) / w;
+
+        projection_(1, 1) = 2 * fy / h;
+        projection_(2, 1) = (2 * cy - h) / h;
+
+        projection_(2, 2) = (zFar + zNear) / (zFar - zNear);
+        projection_(3, 2) = (-2 * zFar * zNear) /(zFar - zNear);
+
+        projection_(2, 3) = 1.0f;
+        projection_(3, 3) = 0.0f;
+
+    std::cout<<ToEType(projection_)<<std::endl;
+
 }
 
 void Panel::paintGL()

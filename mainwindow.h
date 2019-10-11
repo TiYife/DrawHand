@@ -29,10 +29,9 @@ protected:
 private slots:
     void newFile();
     void open();
+    void batch();
     bool save();
     bool saveAs();
-    void updateRecentFileActions();
-    void openRecentFile();
     void about();
     void documentWasModified();
 
@@ -48,7 +47,7 @@ private slots:
     void showCube2(bool checked);
     void showTorus(bool checked);
 
-    void reload();
+
 
 private:
     enum { MaxRecentFiles = 5 };
@@ -58,8 +57,6 @@ private:
     void createStatusBar();
     void readSettings();
     void writeSettings();
-    bool maybeSave();
-    void openFile(const QString &fileName);
     void loadFile(const QString &fileName);
     static bool hasRecentFiles();
     void prependToRecentFiles(const QString &fileName);
@@ -78,6 +75,8 @@ private:
 
     QString curFile;
     bool isUntitled;
+
+    QString filename_{QString("0")};
 };
 
 #endif // MAINWINDOW_H

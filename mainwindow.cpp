@@ -25,55 +25,49 @@ MainWindow::~MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if (maybeSave()) {
-        writeSettings();
-        event->accept();
-    } else {
-        event->ignore();
-    }
+    event->accept();
 }
 
 void MainWindow::newFile()
 {
-    MainWindow *other = new MainWindow;
-    other->tile(this);
-    other->show();
+//    MainWindow *other = new MainWindow;
+//    other->tile(this);
+//    other->show();
 }
 
 void MainWindow::open()
 {
     const QString fileName = QFileDialog::getOpenFileName(this);
     if (!fileName.isEmpty())
-        openFile(fileName);
+        panel -> reloadMeshes(fileName);
+
+    QFileInfo info = QFileInfo(fileName);
+    filename_ = info.baseName();
 }
 
-void MainWindow::openFile(const QString &fileName){
-    //todo change to loadobj
-    MainWindow *existing = findMainWindow(fileName);
-    if (existing) {
-        existing->show();
-        existing->raise();
-        existing->activateWindow();
-        return;
-    }
+void MainWindow::batch()
+{
+    const QStringList filelist = QFileDialog::getOpenFileNames(this,tr("文件选择"),tr("/home"),
+                                                               tr("文本文件(* txt)"));
+    if (!filelist.isEmpty()){
+        for(auto& fileName : filelist){
+            if (!fileName.isEmpty())
+                panel -> reloadMeshes(fileName);
 
-    if (isUntitled && !isWindowModified()) {
-        loadFile(fileName);
-        return;
+            QFileInfo info = QFileInfo(fileName);
+            filename_ = info.baseName();
+            save();
+        }
     }
-
-    MainWindow *other = new MainWindow(fileName);
-//    if (other->isUntitled) {
-//        delete other;
-//        return;
-//    }
-    other->tile(this);
-    other->show();
 }
 
 bool MainWindow::save()
 {
-    panel->grab().save("iii.png");
+    panel->showDepthMap(0);
+    panel->grab().save("pics/color_" + filename_ + ".png");
+    panel->showDepthMap(1);
+    panel->grab().scaled(640, 480).save("pics/depth_" + filename_ + ".png");
+    panel->showDepthMap(0);
     return true;
 }
 
@@ -171,13 +165,6 @@ void MainWindow::showTorus(bool checked)
     panel -> setMeshVisible(4, checked);
 }
 
-void MainWindow::reload()
-{
-    const QString fileName = QFileDialog::getOpenFileName(this);
-    if (!fileName.isEmpty())
-        panel -> reloadMeshes(fileName);
-}
-
 void MainWindow::init()
 {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -216,204 +203,161 @@ void MainWindow::tile(const QMainWindow *previous)
 //! [implicit tr context]
 void MainWindow::createActions()
 {
-    QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
-    QToolBar *fileToolBar = addToolBar(tr("File"));
 
-    const QIcon newIcon = QIcon::fromTheme("document-new", QIcon(":/resource/images/new.png"));
-    QAction *newAct = new QAction(newIcon, tr("&New"), this);
-    newAct->setShortcuts(QKeySequence::New);
-    newAct->setStatusTip(tr("Create a new file"));
-    connect(newAct, &QAction::triggered, this, &MainWindow::open);
-    fileMenu->addAction(newAct);
-    fileToolBar->addAction(newAct);
+// file munu
+    {
+        QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
+        QToolBar *fileToolBar = addToolBar(tr("File"));
 
-    const QIcon openIcon = QIcon::fromTheme("document-open", QIcon(":/resource/images/open.png"));
-    QAction *openAct = new QAction(openIcon, tr("&Open..."), this);
-    openAct->setShortcuts(QKeySequence::Open);
-    openAct->setStatusTip(tr("Open an existing file"));
-    connect(openAct, &QAction::triggered, this, &MainWindow::reload);
-    fileMenu->addAction(openAct);
-    fileToolBar->addAction(openAct);
+        const QIcon openIcon = QIcon::fromTheme("document-open", QIcon(":/resource/images/new.png"));
+        QAction *openAct = new QAction(openIcon, tr("&open"), this);
+        openAct->setStatusTip(tr("Open a new file"));
+        connect(openAct, &QAction::triggered, this, &MainWindow::open);
+        fileMenu->addAction(openAct);
+        fileToolBar->addAction(openAct);
 
-    const QIcon saveIcon = QIcon::fromTheme("document-save", QIcon(":/resource/images/save.png"));
-    QAction *saveAct = new QAction(saveIcon, tr("&Save"), this);
-    saveAct->setShortcuts(QKeySequence::Save);
-    saveAct->setStatusTip(tr("Save the document to disk"));
-    connect(saveAct, &QAction::triggered, this, &MainWindow::save);
-    fileMenu->addAction(saveAct);
-    fileToolBar->addAction(saveAct);
+        const QIcon batchIcon = QIcon::fromTheme("document-batch", QIcon(":/resource/images/open.png"));
+        QAction *batchAct = new QAction(batchIcon, tr("&batch..."), this);
+        batchAct->setStatusTip(tr("batch process a list of existing files"));
+        connect(batchAct, &QAction::triggered, this, &MainWindow::batch);
+        fileMenu->addAction(batchAct);
+        fileToolBar->addAction(batchAct);
 
-    const QIcon saveAsIcon = QIcon::fromTheme("document-save-as");
-    QAction *saveAsAct = fileMenu->addAction(saveAsIcon, tr("Save &As..."), this, &MainWindow::saveAs);
-    saveAsAct->setShortcuts(QKeySequence::SaveAs);
-    saveAsAct->setStatusTip(tr("Save the document under a new name"));
+        const QIcon saveIcon = QIcon::fromTheme("document-save", QIcon(":/resource/images/save.png"));
+        QAction *saveAct = new QAction(saveIcon, tr("&Save"), this);
+        saveAct->setShortcuts(QKeySequence::Save);
+        saveAct->setStatusTip(tr("Save the document to disk"));
+        connect(saveAct, &QAction::triggered, this, &MainWindow::save);
+        fileMenu->addAction(saveAct);
+        fileToolBar->addAction(saveAct);
 
-    fileMenu->addSeparator();
+        const QIcon saveAsIcon = QIcon::fromTheme("document-save-as");
+        QAction *saveAsAct = fileMenu->addAction(saveAsIcon, tr("Save &As..."), this, &MainWindow::saveAs);
+        saveAsAct->setShortcuts(QKeySequence::SaveAs);
+        saveAsAct->setStatusTip(tr("Save the document under a new name"));
 
-    QMenu *recentMenu = fileMenu->addMenu(tr("Recent..."));
-    connect(recentMenu, &QMenu::aboutToShow, this, &MainWindow::updateRecentFileActions);
-    recentFileSubMenuAct = recentMenu->menuAction();
+        fileMenu->addSeparator();
 
-    for (int i = 0; i < MaxRecentFiles; ++i) {
-        recentFileActs[i] = recentMenu->addAction(QString(), this, &MainWindow::openRecentFile);
-        recentFileActs[i]->setVisible(false);
+        QAction *closeAct = fileMenu->addAction(tr("&Close"), this, &QWidget::close);
+        closeAct->setShortcut(tr("Ctrl+W"));
+        closeAct->setStatusTip(tr("Close this window"));
+
+        const QIcon exitIcon = QIcon::fromTheme("application-exit");
+        QAction *exitAct = fileMenu->addAction(exitIcon, tr("E&xit"), qApp, &QApplication::closeAllWindows);
+        exitAct->setShortcuts(QKeySequence::Quit);
+        exitAct->setStatusTip(tr("Exit the application"));
     }
-
-    recentFileSeparator = fileMenu->addSeparator();
-
-    setRecentFilesVisible(MainWindow::hasRecentFiles());
-
-    QAction *closeAct = fileMenu->addAction(tr("&Close"), this, &QWidget::close);
-    closeAct->setShortcut(tr("Ctrl+W"));
-    closeAct->setStatusTip(tr("Close this window"));
-
-    const QIcon exitIcon = QIcon::fromTheme("application-exit");
-    QAction *exitAct = fileMenu->addAction(exitIcon, tr("E&xit"), qApp, &QApplication::closeAllWindows);
-    exitAct->setShortcuts(QKeySequence::Quit);
-    exitAct->setStatusTip(tr("Exit the application"));
-
 
 
 
 
 
 // view munu
-{
-    QMenu *viewMenu = menuBar()->addMenu(tr("&View"));
-    QToolBar *viewToolBar = addToolBar(tr("View"));
+    {
+        QMenu *viewMenu = menuBar()->addMenu(tr("&View"));
+        QToolBar *viewToolBar = addToolBar(tr("View"));
 
-    const QIcon depthIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
-    QAction *depthAct = new QAction(depthIcon, tr("depth"), this);
-    depthAct->setShortcuts(QKeySequence::Cut);
-    depthAct->setStatusTip(tr("show depth"));
-    depthAct->setCheckable(true);
-    depthAct->setChecked(false);
-    connect(depthAct, &QAction::triggered, this, &MainWindow::showDepthMap);
-    viewMenu->addAction(depthAct);
-    viewToolBar->addAction(depthAct);
+        const QIcon depthIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
+        QAction *depthAct = new QAction(depthIcon, tr("depth"), this);
+        depthAct->setShortcuts(QKeySequence::Cut);
+        depthAct->setStatusTip(tr("show depth"));
+        depthAct->setCheckable(true);
+        depthAct->setChecked(false);
+        connect(depthAct, &QAction::triggered, this, &MainWindow::showDepthMap);
+        viewMenu->addAction(depthAct);
+        viewToolBar->addAction(depthAct);
 
 
-    const QIcon showhandIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
-    QAction *showhandAct = new QAction(showhandIcon, tr("show hand"), this);
-    showhandAct->setShortcuts(QKeySequence::Cut);
-    showhandAct->setStatusTip(tr("show hand"));
-    showhandAct->setCheckable(true);
-    showhandAct->setChecked(true);
-    connect(showhandAct, &QAction::triggered, this, &MainWindow::showHand);
-    viewMenu->addAction(showhandAct);
-    viewToolBar->addAction(showhandAct);
+        const QIcon showhandIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
+        QAction *showhandAct = new QAction(showhandIcon, tr("show hand"), this);
+        showhandAct->setShortcuts(QKeySequence::Cut);
+        showhandAct->setStatusTip(tr("show hand"));
+        showhandAct->setCheckable(true);
+        showhandAct->setChecked(true);
+        connect(showhandAct, &QAction::triggered, this, &MainWindow::showHand);
+        viewMenu->addAction(showhandAct);
+        viewToolBar->addAction(showhandAct);
 
-    const QIcon showballIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
-    QAction *showballAct = new QAction(showballIcon, tr("show ball"), this);
-    showballAct->setShortcuts(QKeySequence::Cut);
-    showballAct->setStatusTip(tr("show ball"));
-    showballAct->setCheckable(true);
-    showballAct->setChecked(true);
-    connect(showballAct, &QAction::triggered, this, &MainWindow::showBall);
-    viewMenu->addAction(showballAct);
-    viewToolBar->addAction(showballAct);
+        const QIcon showballIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
+        QAction *showballAct = new QAction(showballIcon, tr("show ball"), this);
+        showballAct->setShortcuts(QKeySequence::Cut);
+        showballAct->setStatusTip(tr("show ball"));
+        showballAct->setCheckable(true);
+        showballAct->setChecked(true);
+        connect(showballAct, &QAction::triggered, this, &MainWindow::showBall);
+        viewMenu->addAction(showballAct);
+        viewToolBar->addAction(showballAct);
 
-    const QIcon showcubeIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
-    QAction *showcubeAct = new QAction(showcubeIcon, tr("show cube"), this);
-    showcubeAct->setShortcuts(QKeySequence::Cut);
-    showcubeAct->setStatusTip(tr("show cube"));
-    showcubeAct->setCheckable(true);
-    showcubeAct->setChecked(false);
-    connect(showcubeAct, &QAction::triggered, this, &MainWindow::showCube);
-    viewMenu->addAction(showcubeAct);
-    viewToolBar->addAction(showcubeAct);
+        const QIcon showcubeIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
+        QAction *showcubeAct = new QAction(showcubeIcon, tr("show cube"), this);
+        showcubeAct->setShortcuts(QKeySequence::Cut);
+        showcubeAct->setStatusTip(tr("show cube"));
+        showcubeAct->setCheckable(true);
+        showcubeAct->setChecked(false);
+        connect(showcubeAct, &QAction::triggered, this, &MainWindow::showCube);
+        viewMenu->addAction(showcubeAct);
+        viewToolBar->addAction(showcubeAct);
 
-    const QIcon showbananaIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
-    QAction *showbananaAct = new QAction(showbananaIcon, tr("show banana"), this);
-    showbananaAct->setShortcuts(QKeySequence::Cut);
-    showbananaAct->setStatusTip(tr("show banana"));
-    showbananaAct->setCheckable(true);
-    showbananaAct->setChecked(false);
-    connect(showbananaAct, &QAction::triggered, this, &MainWindow::showBanana);
-    viewMenu->addAction(showbananaAct);
-    viewToolBar->addAction(showbananaAct);
+        const QIcon showbananaIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
+        QAction *showbananaAct = new QAction(showbananaIcon, tr("show banana"), this);
+        showbananaAct->setShortcuts(QKeySequence::Cut);
+        showbananaAct->setStatusTip(tr("show banana"));
+        showbananaAct->setCheckable(true);
+        showbananaAct->setChecked(false);
+        connect(showbananaAct, &QAction::triggered, this, &MainWindow::showBanana);
+        viewMenu->addAction(showbananaAct);
+        viewToolBar->addAction(showbananaAct);
 
-    const QIcon showtorusIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
-    QAction *showtorusAct = new QAction(showtorusIcon, tr("show torus"), this);
-    showtorusAct->setShortcuts(QKeySequence::Cut);
-    showtorusAct->setStatusTip(tr("show torus"));
-    showtorusAct->setCheckable(true);
-    showtorusAct->setChecked(false);
-    connect(showtorusAct, &QAction::triggered, this, &MainWindow::showTorus);
-    viewMenu->addAction(showtorusAct);
-    viewToolBar->addAction(showtorusAct);
+        const QIcon showtorusIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
+        QAction *showtorusAct = new QAction(showtorusIcon, tr("show torus"), this);
+        showtorusAct->setShortcuts(QKeySequence::Cut);
+        showtorusAct->setStatusTip(tr("show torus"));
+        showtorusAct->setCheckable(true);
+        showtorusAct->setChecked(false);
+        connect(showtorusAct, &QAction::triggered, this, &MainWindow::showTorus);
+        viewMenu->addAction(showtorusAct);
+        viewToolBar->addAction(showtorusAct);
 
-    const QIcon showcube2Icon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
-    QAction *showcube2Act = new QAction(showcube2Icon, tr("show cube2"), this);
-    showcube2Act->setShortcuts(QKeySequence::Cut);
-    showcube2Act->setStatusTip(tr("show cube2"));
-    showcube2Act->setCheckable(true);
-    showcube2Act->setChecked(false);
-    connect(showcube2Act, &QAction::triggered, this, &MainWindow::showCube2);
-    viewMenu->addAction(showcube2Act);
-    viewToolBar->addAction(showcube2Act);
-}
+        const QIcon showcube2Icon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
+        QAction *showcube2Act = new QAction(showcube2Icon, tr("show cube2"), this);
+        showcube2Act->setShortcuts(QKeySequence::Cut);
+        showcube2Act->setStatusTip(tr("show cube2"));
+        showcube2Act->setCheckable(true);
+        showcube2Act->setChecked(false);
+        connect(showcube2Act, &QAction::triggered, this, &MainWindow::showCube2);
+        viewMenu->addAction(showcube2Act);
+        viewToolBar->addAction(showcube2Act);
+    }
 
-    QMenu *toolMenu = menuBar()->addMenu(tr("&Tool"));
-    QToolBar *toolToolBar = addToolBar(tr("Tool"));
+// tool munu
+    {
+        QMenu *toolMenu = menuBar()->addMenu(tr("&Tool"));
+        QToolBar *toolToolBar = addToolBar(tr("Tool"));
 
-    const QIcon auxIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
-    QAction *auxAct = new QAction(auxIcon, tr("Cu&t"), this);
-    auxAct->setShortcuts(QKeySequence::Cut);
-    auxAct->setStatusTip(tr("add Auxiliary shapes"));
-    connect(auxAct, &QAction::triggered, this, &MainWindow::addAuxiliaryShapes);
-    toolMenu->addAction(auxAct);
-    toolToolBar->addAction(auxAct);
+        const QIcon auxIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
+        QAction *auxAct = new QAction(auxIcon, tr("Cu&t"), this);
+        auxAct->setShortcuts(QKeySequence::Cut);
+        auxAct->setStatusTip(tr("add Auxiliary shapes"));
+        connect(auxAct, &QAction::triggered, this, &MainWindow::addAuxiliaryShapes);
+        toolMenu->addAction(auxAct);
+        toolToolBar->addAction(auxAct);
 
-    const QIcon ballIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
-    QAction *drawAct = new QAction(ballIcon, tr("Cu&t"), this);
-    drawAct->setShortcuts(QKeySequence::Cut);
-    drawAct->setStatusTip(tr("get joint indices"));
-    connect(drawAct, &QAction::triggered, this, &MainWindow::drawBall);
-    toolMenu->addAction(drawAct);
-    toolToolBar->addAction(drawAct);
+        const QIcon ballIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
+        QAction *drawAct = new QAction(ballIcon, tr("Cu&t"), this);
+        drawAct->setShortcuts(QKeySequence::Cut);
+        drawAct->setStatusTip(tr("get joint indices"));
+        connect(drawAct, &QAction::triggered, this, &MainWindow::drawBall);
+        toolMenu->addAction(drawAct);
+        toolToolBar->addAction(drawAct);
 
-    const QIcon findIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
-    QAction *findAct = new QAction(findIcon, tr("Cu&t"), this);
-    findAct->setShortcuts(QKeySequence::Cut);
-    findAct->setStatusTip(tr("get joint indices"));
-    connect(findAct, &QAction::triggered, this, &MainWindow::findKeyIndices);
-    toolMenu->addAction(findAct);
-    toolToolBar->addAction(findAct);
-
-//    const QIcon copyIcon = QIcon::fromTheme("edit-copy", QIcon(":/images/copy.png"));
-//    QAction *copyAct = new QAction(copyIcon, tr("&Copy"), this);
-//    copyAct->setShortcuts(QKeySequence::Copy);
-//    copyAct->setStatusTip(tr("Copy the current selection's contents to the "
-//                             "clipboard"));
-//    connect(copyAct, &QAction::triggered, textEdit, &QTextEdit::copy);
-//    editMenu->addAction(copyAct);
-//    editToolBar->addAction(copyAct);
-
-//    const QIcon pasteIcon = QIcon::fromTheme("edit-paste", QIcon(":/images/paste.png"));
-//    QAction *pasteAct = new QAction(pasteIcon, tr("&Paste"), this);
-//    pasteAct->setShortcuts(QKeySequence::Paste);
-//    pasteAct->setStatusTip(tr("Paste the clipboard's contents into the current "
-//                              "selection"));
-//    connect(pasteAct, &QAction::triggered, textEdit, &QTextEdit::paste);
-//    editMenu->addAction(pasteAct);
-//    editToolBar->addAction(pasteAct);
-
-    menuBar()->addSeparator();
-
-    QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
-    QAction *aboutAct = helpMenu->addAction(tr("&About"), this, &MainWindow::about);
-    aboutAct->setStatusTip(tr("Show the application's About box"));
-
-    QAction *aboutQtAct = helpMenu->addAction(tr("About &Qt"), qApp, &QApplication::aboutQt);
-    aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
-
-#ifndef QT_NO_CLIPBOARD
-//    cutAct->setEnabled(false);
-//    copyAct->setEnabled(false);
-//    connect(textEdit, &QTextEdit::copyAvailable, cutAct, &QAction::setEnabled);
-//    connect(textEdit, &QTextEdit::copyAvailable, copyAct, &QAction::setEnabled);
-#endif // !QT_NO_CLIPBOARD
+        const QIcon findIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
+        QAction *findAct = new QAction(findIcon, tr("Cu&t"), this);
+        findAct->setShortcuts(QKeySequence::Cut);
+        findAct->setStatusTip(tr("get joint indices"));
+        connect(findAct, &QAction::triggered, this, &MainWindow::findKeyIndices);
+        toolMenu->addAction(findAct);
+        toolToolBar->addAction(findAct);
+    }
 }
 
 void MainWindow::createStatusBar()
@@ -441,51 +385,13 @@ void MainWindow::writeSettings()
     settings.setValue("geometry", saveGeometry());
 }
 
-bool MainWindow::maybeSave()
-{
-//    if (!textEdit->document()->isModified())
-//        return true;
-//    const QMessageBox::StandardButton ret
-//        = QMessageBox::warning(this, tr("SDI"),
-//                               tr("The document has been modified.\n"
-//                                  "Do you want to save your changes?"),
-//                               QMessageBox::Save | QMessageBox::Discard
-//                               | QMessageBox::Cancel);
-//    switch (ret) {
-//    case QMessageBox::Save:
-//        return save();
-//    case QMessageBox::Cancel:
-//        return false;
-//    default:
-//        break;
-//    }
-    return true;
-}
-
 void MainWindow::loadFile(const QString &fileName)
 {
-//    std::string s = fileName.toLocal8Bit().constData();
     QString s = fileName;
     unique_ptr<Mesh> mesh = FileUtil::LoadObj(s.toStdString(), "");
 
-    //todo
-//    panel -> addMesh(mesh);
     panel->setHandMesh(std::move(mesh));
-//    QFile file(fileName);
-//    if (!file.open(QFile::ReadOnly | QFile::Text)) {
-//        QMessageBox::warning(this, tr("SDI"),
-//                             tr("Cannot read file %1:\n%2.")
-//                             .arg(QDir::toNativeSeparators(fileName), file.errorString()));
-//        return;
-//    }
 
-//    QTextStream in(&file);
-//    QApplication::setOverrideCursor(Qt::WaitCursor);
-//    textEdit->setPlainText(in.readAll());
-//    QApplication::restoreOverrideCursor();
-
-//    setCurrentFile(fileName);
-//    statusBar()->showMessage(tr("File loaded"), 2000);
 }
 
 void MainWindow::setRecentFilesVisible(bool visible)
@@ -542,28 +448,6 @@ void MainWindow::prependToRecentFiles(const QString &fileName)
     setRecentFilesVisible(!recentFiles.isEmpty());
 }
 
-void MainWindow::updateRecentFileActions()
-{
-    QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
-
-    const QStringList recentFiles = readRecentFiles(settings);
-    const int count = qMin(int(MaxRecentFiles), recentFiles.size());
-    int i = 0;
-    for ( ; i < count; ++i) {
-        const QString fileName = MainWindow::strippedName(recentFiles.at(i));
-        recentFileActs[i]->setText(tr("&%1 %2").arg(i + 1).arg(fileName));
-        recentFileActs[i]->setData(recentFiles.at(i));
-        recentFileActs[i]->setVisible(true);
-    }
-    for ( ; i < MaxRecentFiles; ++i)
-        recentFileActs[i]->setVisible(false);
-}
-
-void MainWindow::openRecentFile()
-{
-    if (const QAction *action = qobject_cast<const QAction *>(sender()))
-        openFile(action->data().toString());
-}
 
 bool MainWindow::saveFile(const QString &fileName)
 {

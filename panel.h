@@ -9,6 +9,13 @@
 #include "meshbuilders.h"
 #include "fileutil.h"
 
+struct CameraParam{
+    float fx = 473.297f;
+    float fy = fx;
+    float cx = 316.561f;
+    float cy = 245.293f;
+};
+
 
 class Panel : public QOpenGLWidget, protected QOpenGLFunctions
 {
@@ -48,14 +55,7 @@ private:
 
 
 private:
-//    QBasicTimer timer_;
-//    QOpenGLShaderProgram hand_program_;
-//    QOpenGLShaderProgram default_program_;
-
-//    QOpenGLTexture * texture_;
-    QOpenGLFramebufferObject  *render_fbo;
-    QOpenGLFramebufferObject  *texture_fbo;
-
+    CameraParam cameraParam;
     QMat4 projection_;
 
     QVec2 mouse_position_;
