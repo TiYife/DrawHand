@@ -33,7 +33,9 @@ public:
     void reloadMeshes(QString path);
 
     void showDepthMap(bool depth_mode);
+
     QImage saveScreen();
+    void saveKeyPos(QString filename);
 protected:
     void mousePressEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
@@ -68,11 +70,13 @@ private:
 
 //    unique_ptr<Render> render;
     unique_ptr<Mesh> hand_mesh_;
-    std::vector<unique_ptr<Mesh>> auxiliary_meshes_;
     std::vector<unique_ptr<Mesh>> meshes_;
-    std::vector<std::vector<int>> hand_key_indices;
-
     unordered_map<Mesh*, unique_ptr<RenderMesh>> mesh_map_;
+
+    std::vector<std::vector<int>> hand_key_indices_;
+    std::vector<Vec3> hand_key_pos_;
+    std::vector<unique_ptr<Mesh>> auxiliary_meshes_;
+
 
 };
 #endif // PANEL_H

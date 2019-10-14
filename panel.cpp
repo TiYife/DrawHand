@@ -124,8 +124,11 @@ void Panel::setMeshVisible(int id, bool show)
 {
     if(id == -1)
         hand_mesh_->SetVisible(show);
-    else if(id == -2)
-        auxiliary_meshes_[id]->SetVisible(show);
+    else if(id == -2){
+        for(auto& aux: auxiliary_meshes_){
+            aux->SetVisible(show);
+        }
+    }
     else
         meshes_[id]->SetVisible(show);
     update();
@@ -164,6 +167,11 @@ QImage Panel::saveScreen()
     return QImage();
 }
 
+void Panel::saveKeyPos(QString filename)
+{
+    FileUtil::WriteKeyPos(filename, hand_key_pos_);
+}
+
 void Panel::clearAuxiliaryMeshes()
 {
     auxiliary_meshes_.clear();
@@ -172,24 +180,26 @@ void Panel::clearAuxiliaryMeshes()
 void Panel::initAuxiliaryMeshes()
 {
     unique_ptr<Mesh> mesh;
-    for(auto & indices : hand_key_indices){
-        Vec3 pos = Vec3(0,0,0);
-        for(auto& i: indices){
+    size_t size = hand_key_indices_.size();
+    hand_key_pos_.resize(size, Vec3(0,0,0));
+
+    for(size_t i = 0; i < size; i++){
+        for(auto& j: hand_key_indices_[i]){
             //todo mesh_
-            pos+=hand_mesh_->positions_[i];
+            hand_key_pos_[i] += hand_mesh_->positions_[j];
 
         }
-        pos/=indices.size();
-        mesh = std::move(MeshBuilders::CreateSphere(pos, 10));
+        hand_key_pos_[i] /= hand_key_indices_[i].size();
+        mesh = std::move(MeshBuilders::CreateSphere(hand_key_pos_[i], 10));
         mesh_map_[mesh.get()] = unique_ptr<RenderMesh>(new SimpleRenderMesh(mesh.get(), QColor(255,0,0)));
         auxiliary_meshes_.push_back(std::move(mesh));
     }
 }
 
 void Panel::updateAuxiliaryMeshes()
-{
+{/*
     int i = 0;
-    for(auto & indices : hand_key_indices){
+    for(auto & indices : hand_key_indices_){
         Vec3 pos = Vec3(0,0,0);
         for(auto& i: indices){
             //todo mesh_
@@ -201,6 +211,20 @@ void Panel::updateAuxiliaryMeshes()
         t.setTranslate(pos);
         auxiliary_meshes_[i]->SetTransform(t);
         i++;
+    }*/
+
+    size_t size = hand_key_indices_.size();
+    hand_key_pos_.resize(size, Vec3(0,0,0));
+
+    for(size_t i = 0; i < size; i++){
+        for(auto& j: hand_key_indices_[i]){
+            hand_key_pos_[i] += hand_mesh_->positions_[j];
+        }
+
+        hand_key_pos_[i] /= hand_key_indices_[i].size();
+        Transform t;
+        t.setTranslate(hand_key_pos_[i]);
+        auxiliary_meshes_[i]->SetTransform(t);
     }
 
 }
@@ -311,6 +335,6 @@ void Panel::setHandMesh(unique_ptr<Mesh> mesh)
 
 void Panel::addKeyIndices(const std::vector<int> &indices)
 {
-    hand_key_indices.push_back(indices);
+    hand_key_indices_.push_back(indices);
     initAuxiliaryMeshes();
 }

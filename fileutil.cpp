@@ -204,6 +204,16 @@ vector<vector<int>> FileUtil::LoadKeyIndices(QString filename)
     return ans;
 }
 
+void FileUtil::WriteKeyPos(const QString& filename, std::vector<Eigen::Vector3f>& pos)
+{
+    ofstream file;
+    file.open(QFileInfo(filename).absoluteFilePath().toStdString());
+    for(auto& p : pos){
+        file << p.x() <<" " << p.y() <<" " << p.z() <<"\n";
+    }
+    file.close();
+}
+
 vector<Transform> FileUtil::ReadPose(string filename) {
     vector<Transform> poses;
     int i;

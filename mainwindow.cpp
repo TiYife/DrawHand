@@ -56,6 +56,8 @@ void MainWindow::batch()
 
             QFileInfo info = QFileInfo(fileName);
             filename_ = info.baseName();
+            auto a = info.absoluteFilePath();
+            qDebug()<<a;
             save();
         }
     }
@@ -68,6 +70,8 @@ bool MainWindow::save()
     panel->showDepthMap(1);
     panel->grab().scaled(640, 480).save("pics/depth_" + filename_ + ".png");
     panel->showDepthMap(0);
+
+    panel->saveKeyPos("pics/key_points_" + filename_ +".txt");
     return true;
 }
 
@@ -163,6 +167,11 @@ void MainWindow::showCube2(bool checked)
 void MainWindow::showTorus(bool checked)
 {
     panel -> setMeshVisible(4, checked);
+}
+
+void MainWindow::showAuxiliary(bool checked)
+{
+    panel -> setMeshVisible(-2, checked);
 }
 
 void MainWindow::init()
@@ -327,6 +336,17 @@ void MainWindow::createActions()
         connect(showcube2Act, &QAction::triggered, this, &MainWindow::showCube2);
         viewMenu->addAction(showcube2Act);
         viewToolBar->addAction(showcube2Act);
+
+
+        const QIcon showauxIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
+        QAction *showauxAct = new QAction(showauxIcon, tr("show aux"), this);
+        showauxAct->setShortcuts(QKeySequence::Cut);
+        showauxAct->setStatusTip(tr("show aux"));
+        showauxAct->setCheckable(true);
+        showauxAct->setChecked(false);
+        connect(showauxAct, &QAction::triggered, this, &MainWindow::showAuxiliary);
+        viewMenu->addAction(showauxAct);
+        viewToolBar->addAction(showauxAct);
     }
 
 // tool munu

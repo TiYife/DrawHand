@@ -46,6 +46,7 @@ private slots:
     void showBanana(bool checked);
     void showCube2(bool checked);
     void showTorus(bool checked);
+    void showAuxiliary(bool checked);
 
 
 

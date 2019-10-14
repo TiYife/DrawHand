@@ -23,6 +23,8 @@ public:
 
     static vector<vector<int>> LoadKeyIndices(QString filename);
 
+    static void WriteKeyPos(const QString& filename, std::vector<Vec3>& pos);
+
     static vector<Transform> ReadPose(string filename );
 
     static vector<Face> readIndex(string filename);
