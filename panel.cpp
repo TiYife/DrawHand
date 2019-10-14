@@ -17,6 +17,7 @@ Panel::Panel(QWidget *parent) :
 //    render = unique_ptr<Render>(new Render());
     this->grabKeyboard();
      makeCurrent();
+     resizeGL(640, 480);
 
 }
 
@@ -227,18 +228,18 @@ void Panel::resizeGL(int w, int h)
         projection_.setToIdentity();
 
         projection_(0, 0) = 2 * fx / w;
-        projection_(2, 0) = (2 * cx - w) / w;
+        //projection_(0, 2) = -(2 * cx - w) / w;
 
         projection_(1, 1) = 2 * fy / h;
-        projection_(2, 1) = (2 * cy - h) / h;
+        //projection_(1, 2) = -(2 * cy - h) / h;
 
-        projection_(2, 2) = (zFar + zNear) / (zFar - zNear);
-        projection_(3, 2) = (-2 * zFar * zNear) /(zFar - zNear);
+        projection_(2, 2) = -(zFar + zNear) / (zFar - zNear);
+        projection_(2, 3) = (-1 * zFar * zNear) /(zFar - zNear);
 
-        projection_(2, 3) = 1.0f;
+        projection_(3, 2) = -1.0f;
         projection_(3, 3) = 0.0f;
 
-    std::cout<<ToEType(projection_)<<std::endl;
+    std::cout<<ToEType(projection_).transpose()<<std::endl;
 
 }
 
