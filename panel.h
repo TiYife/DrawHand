@@ -35,7 +35,9 @@ public:
 
     void showDepthMap(bool depth_mode);
 
-    QImage saveScreen();
+    void saveColorImage(QString filename);
+    void saveDepthImage(QString filename);
+
     void saveKeyPos(QString filename);
 protected:
     void mousePressEvent(QMouseEvent *e) override;
@@ -67,9 +69,11 @@ private:
     qreal angular_speed_;
     qreal scale_;
     qreal offset_x_, offset_y_, offset_z_;
-    bool press;
 
-//    unique_ptr<Render> render;
+    bool press_{0};
+    bool depth_{0};
+
+
     unique_ptr<Mesh> hand_mesh_;
     std::vector<unique_ptr<Mesh>> meshes_;
     unordered_map<Mesh*, unique_ptr<RenderMesh>> mesh_map_;
@@ -78,7 +82,8 @@ private:
     std::vector<Vec3> hand_key_pos_;
     std::vector<unique_ptr<Mesh>> auxiliary_meshes_;
 
-    GLuint framebuffer;
-    GLuint texture_color_buffer;
+    GLuint colorbuffer, depthbuffer;
+
+    cv::Mat color_image_, depth_image_;
 };
 #endif // PANEL_H

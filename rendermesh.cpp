@@ -156,8 +156,9 @@ void TextureRenderMesh::update()
 }
 
 
-void TextureRenderMesh::draw(QMatrix4x4 view, QMatrix4x4 projection)
+void TextureRenderMesh::draw(QMatrix4x4 view, QMatrix4x4 projection, bool depth)
 {
+    DepthMode(depth);
     if (!shader_->bind())
         return;
 
@@ -263,8 +264,10 @@ void SimpleRenderMesh::update()
     }
 }
 
-void SimpleRenderMesh::draw(QMatrix4x4 view, QMatrix4x4 projection)
+void SimpleRenderMesh::draw(QMatrix4x4 view, QMatrix4x4 projection, bool depth)
 {
+    DepthMode(depth);
+
     if (!shader_->bind())
         return;
 
@@ -304,6 +307,5 @@ void SimpleRenderMesh::draw(QMatrix4x4 view, QMatrix4x4 projection)
 //    glPolygonMode(GL_BACK, GL_LINE);
 //    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mesh_->faces_.size() * sizeof(Face)), GL_UNSIGNED_INT, 0);
-
     shader_->release();
 }

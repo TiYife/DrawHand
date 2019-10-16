@@ -2,6 +2,7 @@
 #include <QtWidgets>
 #include <string>
 #include "mainwindow.h"
+#include <windows.h>
 
 MainWindow::MainWindow()
 {
@@ -89,11 +90,15 @@ bool MainWindow::saveAs()
 
 bool MainWindow::saveFile(const QString &dir)
 {
-    panel->showDepthMap(0);
-    panel->grab().save(dir + "color_" + filename_ + ".png");
-    panel->showDepthMap(1);
-    panel->grab().scaled(640, 480).save(dir + "depth_" + filename_ + ".png");
-    panel->showDepthMap(0);
+    //panel->showDepthMap(0);
+//    panel->grab().save(dir + "color_" + filename_ + ".png");
+   // panel->saveColorImage(dir + "color_" + filename_ + ".png");
+
+//    panel->showDepthMap(true);
+//    panel->grab().scaled(640, 480).save(dir + "depth_" + filename_ + ".png");
+    panel->saveDepthImage(dir + "depth_" + filename_ + ".png");
+//    Sleep(5000);
+    panel->showDepthMap(false);
 
     panel->saveKeyPos(dir + "key_points_" + filename_ +".txt");
     return true;
