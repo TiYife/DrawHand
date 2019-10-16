@@ -5,6 +5,8 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT += opengl
+
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -68,6 +70,43 @@ RESOURCES += \
     shaders.qrc \
     objs.qrc
 
-INCLUDEPATH += D:\DevelopTools\eigen3
+INCLUDEPATH += D:/DevelopTools/eigen3 \
+    D:/DevelopTools/opencv/build/include
+
+#LIBS += -LD:/DevelopTools/opencv/build/x64/vc14/lib    \
+#    -lopencv_core2413d.dll    \
+#    -lopencv_highgui2413d \
+#    -lopencv_imgproc2413d \
+#    -lopencv_features2d2413d \
+#    -lopencv_calib3d2413d \
+#LIBS += D:/DevelopTools/opencv/build/x64/vc14/lib
+
+CONFIG(debug, debug|release): {
+LIBS += -LD:/DevelopTools/opencv/build/x64/vc14/lib \
+-lopencv_core2413d \
+-lopencv_imgproc2413d \
+-lopencv_highgui2413d \
+-lopencv_ml2413d \
+-lopencv_video2413d \
+-lopencv_features2d2413d \
+-lopencv_calib3d2413d \
+-lopencv_objdetect2413d \
+-lopencv_contrib2413d \
+-lopencv_legacy2413d \
+-lopencv_flann2413d
+} else:CONFIG(release, debug|release): {
+LIBS += -LD:/DevelopTools/opencv/build/x64/vc14/lib \
+-lopencv_core2413 \
+-lopencv_imgproc2413 \
+-lopencv_highgui2413 \
+-lopencv_ml2413 \
+-lopencv_video2413 \
+-lopencv_features2d2413 \
+-lopencv_calib3d2413 \
+-lopencv_objdetect2413 \
+-lopencv_contrib2413 \
+-lopencv_legacy2413 \
+-lopencv_flann2413
+}
 
 DISTFILES +=

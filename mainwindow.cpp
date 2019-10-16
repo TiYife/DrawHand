@@ -49,29 +49,30 @@ void MainWindow::batch()
 {
     const QStringList filelist = QFileDialog::getOpenFileNames(this,tr("文件选择"),tr("/home"),
                                                                tr("文本文件(* txt)"));
+
+    QString savepath = kBasePath + QString::fromStdString(FileUtil::GetTime()) + "/";
+    QDir dir(savepath);
+    if(!dir.exists())
+        dir.mkdir(savepath);
     if (!filelist.isEmpty()){
         for(auto& fileName : filelist){
             if (!fileName.isEmpty())
                 panel -> reloadMeshes(fileName);
-
             QFileInfo info = QFileInfo(fileName);
             filename_ = info.baseName();
-            auto a = info.absoluteFilePath();
-            qDebug()<<a;
-            save();
+            saveFile(savepath);
         }
     }
 }
 
 bool MainWindow::save()
 {
-    panel->showDepthMap(0);
-    panel->grab().save("pics/color_" + filename_ + ".png");
-    panel->showDepthMap(1);
-    panel->grab().scaled(640, 480).save("pics/depth_" + filename_ + ".png");
-    panel->showDepthMap(0);
-
-    panel->saveKeyPos("pics/key_points_" + filename_ +".txt");
+    filename_ = QString::fromStdString(to_string(temp_no_++));
+    QString savepath = kBasePath + "temp/";
+    QDir dir(savepath);
+    if(!dir.exists())
+        dir.mkdir(savepath);
+    saveFile(savepath);
     return true;
 }
 
@@ -83,6 +84,19 @@ bool MainWindow::saveAs()
         return false;
 
     return saveFile(fileName);
+}
+
+
+bool MainWindow::saveFile(const QString &dir)
+{
+    panel->showDepthMap(0);
+    panel->grab().save(dir + "color_" + filename_ + ".png");
+    panel->showDepthMap(1);
+    panel->grab().scaled(640, 480).save(dir + "depth_" + filename_ + ".png");
+    panel->showDepthMap(0);
+
+    panel->saveKeyPos(dir + "key_points_" + filename_ +".txt");
+    return true;
 }
 
 void MainWindow::about()
@@ -469,25 +483,6 @@ void MainWindow::prependToRecentFiles(const QString &fileName)
 }
 
 
-bool MainWindow::saveFile(const QString &fileName)
-{
-//    QFile file(fileName);
-//    if (!file.open(QFile::WriteOnly | QFile::Text)) {
-//        QMessageBox::warning(this, tr("SDI"),
-//                             tr("Cannot write file %1:\n%2.")
-//                             .arg(QDir::toNativeSeparators(fileName), file.errorString()));
-//        return false;
-//    }
-
-//    QTextStream out(&file);
-//    QApplication::setOverrideCursor(Qt::WaitCursor);
-//    out << textEdit->toPlainText();
-//    QApplication::restoreOverrideCursor();
-
-//    setCurrentFile(fileName);
-//    statusBar()->showMessage(tr("File saved"), 2000);
-    return true;
-}
 
 void MainWindow::setCurrentFile(const QString &fileName)
 {

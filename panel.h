@@ -5,6 +5,7 @@
 #include <QQuaternion>
 #include <QBasicTimer>
 #include <QOpenGLFramebufferObject>
+#include <opencv2/opencv.hpp>
 #include "rendermesh.h"
 #include "meshbuilders.h"
 #include "fileutil.h"
@@ -77,6 +78,7 @@ private:
     std::vector<Vec3> hand_key_pos_;
     std::vector<unique_ptr<Mesh>> auxiliary_meshes_;
 
-
+    GLuint framebuffer;
+    GLuint texture_color_buffer;
 };
 #endif // PANEL_H

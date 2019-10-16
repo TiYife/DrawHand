@@ -118,6 +118,16 @@ void Panel::initializeGL()
     glEnable(GL_CULL_FACE);
 
     initMeshes();
+
+//    glGenFramebuffers(1, &framebuffer);
+//    glBindBuffer(GL_FRAMEBUFFER, framebuffer);
+
+//    glGenTextures(1, &texture_color_buffer);
+//    glBindTexture(GL_TEXTURE_2D, texture_color_buffer);
+//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 640, 480, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_color_buffer, 0);
 }
 
 void Panel::setMeshVisible(int id, bool show)
@@ -158,12 +168,14 @@ void Panel::showDepthMap(bool depth_mode)
 
 QImage Panel::saveScreen()
 {
-//    GLubyte *data = malloc(components * width * height);
-//    if( data ) {
-//        glReadPixels(0, 0, width, height, format, GL_UNSIGNED_BYTE, data);
-//    }
-
-//    return QImage(data, size().width(), size().height(), QImage::Format_RGB888);
+    cv::Mat image = cv::Mat(480, 640, CV_8UC3, cv::Scalar(0));
+//    glBindTexture(GL_TEXTURE_2D, texture_color_buffer);
+//    glGetTexImage(GL_TEXTURE_2D, 0, GL_BGR, GL_UNSIGNED_BYTE, (GLvoid*)image.data);
+//    glBindTexture(GL_TEXTURE_2D, 0);
+    glReadPixels(0,0,640,480,GL_BGR,GL_UNSIGNED_BYTE, image.data);
+    cv::Mat image_flipped;
+    cv::flip(image, image_flipped, 0);
+    cv::imshow("1", image_flipped);
     return QImage();
 }
 
@@ -225,6 +237,7 @@ void Panel::updateAuxiliaryMeshes()
         Transform t;
         t.setTranslate(hand_key_pos_[i]);
         auxiliary_meshes_[i]->SetTransform(t);
+        mesh_map_[auxiliary_meshes_[i].get()] ->update();
     }
 
 }
@@ -271,8 +284,6 @@ void Panel::paintGL()
 {
     // Clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
 
     // Calculate model view transformation
     QMat4 matrix;

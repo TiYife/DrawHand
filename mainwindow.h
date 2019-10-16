@@ -62,7 +62,7 @@ private:
     static bool hasRecentFiles();
     void prependToRecentFiles(const QString &fileName);
     void setRecentFilesVisible(bool visible);
-    bool saveFile(const QString &fileName);
+    bool saveFile(const QString &dir);
     void setCurrentFile(const QString &fileName);
     static QString strippedName(const QString &fullFileName);
     MainWindow *findMainWindow(const QString &fileName) const;
@@ -77,7 +77,8 @@ private:
     QString curFile;
     bool isUntitled;
 
-    QString filename_{QString("0")};
+    QString filename_;
+    int temp_no_{0};
 };
 
 #endif // MAINWINDOW_H

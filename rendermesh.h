@@ -20,12 +20,13 @@ public:
     RenderMesh(Mesh * mesh);
     virtual ~RenderMesh();
 
+    virtual void update() = 0;
     virtual void draw(QMat4 view, QMat4 projection) = 0;
 
-    void initialize();
     void DepthMode(bool depth_mode_);
 
 protected:
+    void initialize();
     virtual void initColorShader() = 0;
     virtual void initDepthShader() = 0;
 
@@ -46,8 +47,8 @@ public:
 
 
     void initTexture(QString textrue_path);
-    void update();
 
+    virtual void update() override;
     virtual void initColorShader() override;
     virtual void initDepthShader() override;
     virtual void draw(QMat4 view, QMat4 projection) override;
@@ -63,7 +64,7 @@ public:
     SimpleRenderMesh(Mesh * mesh, QColor color);
     virtual ~SimpleRenderMesh();
 
-    void update();
+    virtual void update() override;
 
     virtual void initColorShader() override;
     virtual void initDepthShader() override;

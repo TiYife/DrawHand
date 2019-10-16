@@ -214,6 +214,15 @@ void FileUtil::WriteKeyPos(const QString& filename, std::vector<Eigen::Vector3f>
     file.close();
 }
 
+string FileUtil::GetTime()
+{
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
+    string s = to_string(ltm->tm_year + 1900) + "-" + to_string(ltm->tm_mon + 1) + "-" + to_string(ltm->tm_mday) + "-" + to_string(ltm->tm_hour) + "-" + to_string(ltm->tm_min);
+    //delete ltm;
+    return s;
+}
+
 vector<Transform> FileUtil::ReadPose(string filename) {
     vector<Transform> poses;
     int i;

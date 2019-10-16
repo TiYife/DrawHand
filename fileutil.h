@@ -13,6 +13,9 @@ enum ObjectType {
     TYPE_BALL = 0, TYPE_CUBE, TYPE_BANANA, TYPE_TORUS, TYPE_CUBE2, OBJECT_TYPE_MAX
 };
 
+
+static const QString kBasePath = "C:/CLAP/data/";
+
 class FileUtil{
 public:
     static unique_ptr<Mesh> LoadObj(std::string filename, string objname);
@@ -24,6 +27,8 @@ public:
     static vector<vector<int>> LoadKeyIndices(QString filename);
 
     static void WriteKeyPos(const QString& filename, std::vector<Vec3>& pos);
+
+    static string GetTime();
 
     static vector<Transform> ReadPose(string filename );
 

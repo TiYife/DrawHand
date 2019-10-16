@@ -272,7 +272,7 @@ void SimpleRenderMesh::draw(QMatrix4x4 view, QMatrix4x4 projection)
         return;
 
 //    if(mesh_->IsChanged())
-        //update();
+//        update();
 
     Transform t = mesh_->GetTransform();
     QMat4 model = t.toQMat4();
