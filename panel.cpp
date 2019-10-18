@@ -11,12 +11,13 @@ Panel::Panel(QWidget *parent) :
     scale_(0.01),
     offset_x_(0),
     offset_y_(0),
-    offset_z_(-5),
+    offset_z_(-1000),
     hand_mesh_(nullptr)
 {
 //    render = unique_ptr<Render>(new Render());
     this->grabKeyboard();
      makeCurrent();
+     setFixedSize(640,480);
      resizeGL(640, 480);
      depth_image_ = cv::Mat(this->height(), this->width(), CV_32FC1, cv::Scalar(0));
      color_image_ = cv::Mat(this->height(), this->width(), CV_8UC3, cv::Scalar(0));
@@ -73,9 +74,9 @@ void Panel::mouseMoveEvent(QMouseEvent *e)
 void Panel::wheelEvent(QWheelEvent *e)
 {
     if(e->delta()>0)
-        scale_*=1.1;
+        offset_z_+=10;
     else
-        scale_/=1.1;
+        offset_z_-=10;
     update();
 }
 
@@ -83,22 +84,22 @@ void Panel::keyPressEvent(QKeyEvent *e)
 {
     switch (e->key()) {
     case Qt::Key_Left:
-        offset_x_-=0.1;
+        offset_x_-=10;
         break;
     case Qt::Key_Right:
-        offset_x_+=0.1;
+        offset_x_+=10;
         break;
     case Qt::Key_Up:
-        offset_y_+=0.1;
+        offset_y_+=10;
         break;
     case Qt::Key_Down:
-        offset_y_-=0.1;
+        offset_y_-=10;
         break;
     case Qt::Key_Plus:
-        offset_z_+=0.1;
+        offset_z_+=10;
         break;
     case Qt::Key_Minus:
-        offset_z_-=0.1;
+        offset_z_-=10;
         break;
     default:
         break;
@@ -133,7 +134,7 @@ void Panel::initializeGL()
 void Panel::resizeGL(int w, int h)
 {
     // Set near plane to 3.0, far plane to 7.0, field of view 45 degrees
-    const qreal zNear = 1, zFar = 1000, fov = 45.0;
+//    const qreal zNear = 1, zFar = 1000, fov = 45.0;
 
 //    // Calculate aspect ratio
 //    qreal aspect = qreal(w) / qreal(h ? h : 1);
@@ -145,21 +146,21 @@ void Panel::resizeGL(int w, int h)
 //    projection_.perspective(fov, aspect, zNear, zFar);
 
 
-        float fx = cameraParam.fx * w / 640;
-        float fy = cameraParam.fy * h / 480;
-        float cx = cameraParam.cx * w / 640;
-        float cy = cameraParam.cy * h / 480;
+        float fx = camera_param_.fx * w / 640;
+        float fy = camera_param_.fy * h / 480;
+        float cx = camera_param_.cx * w / 640;
+        float cy = camera_param_.cy * h / 480;
 
         projection_.setToIdentity();
 
         projection_(0, 0) = 2 * fx / w;
-        //projection_(0, 2) = -(2 * cx - w) / w;
+        projection_(0, 2) = -(2 * cx - w) / w;
 
         projection_(1, 1) = 2 * fy / h;
-        //projection_(1, 2) = -(2 * cy - h) / h;
+        projection_(1, 2) = (2 * cy - h) / h;
 
-        projection_(2, 2) = -(zFar + zNear) / (zFar - zNear);
-        projection_(2, 3) = (-1 * zFar * zNear) /(zFar - zNear);
+        projection_(2, 2) = -(zfar_ + znear_) / (zfar_ - znear_);
+        projection_(2, 3) = (-2 * zfar_ * znear_) /(zfar_ - znear_);
 
         projection_(3, 2) = -1.0f;
         projection_(3, 3) = 0.0f;
@@ -174,7 +175,10 @@ void Panel::paintGL()
     QMat4 matrix;
     matrix.translate(offset_x_, offset_y_, offset_z_);
     matrix.rotate(rotation_);
-    matrix.scale(scale_);
+    std::cout<<ToEType(matrix)<<std::endl;
+//    matrix.scale(scale_);
+
+    std::cout<<ToEType(matrix)<<std::endl;
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -282,13 +286,15 @@ void Panel::showDepthMap(bool depth_mode)
 
 void Panel::saveColorImage(QString filename)
 {
-    cv::Mat color_image = cv::Mat(this->height(), this->width(), CV_8UC3, cv::Scalar(0));
-    glReadPixels(0,0,this->width(),this->height(),GL_BGR,GL_UNSIGNED_BYTE, color_image.data);
+//    cv::Mat color_image = cv::Mat(this->height(), this->width(), CV_8UC3, cv::Scalar(0));
+//    glReadPixels(0,0,this->width(),this->height(),GL_BGR,GL_UNSIGNED_BYTE, color_image.data);
+
+    resizeGL(640, 480);
 
     cv::Mat color_image_flipped;
-    cv::flip(color_image, color_image_flipped, 0);
+    cv::flip(color_image_, color_image_flipped, 0);
     cv::imshow("color", color_image_flipped);
-    //cv::imwrite(filename.toStdString(), color_image_flipped);
+//    cv::imwrite(filename.toStdString(), color_image_flipped);
 }
 
 void Panel::saveDepthImage(QString filename)
@@ -296,24 +302,71 @@ void Panel::saveDepthImage(QString filename)
 //    cv::Mat image = cv::Mat(this->height(), this->width(), CV_32FC1, cv::Scalar(0));
 //    glReadPixels(0,0,this->width(),this->height(),GL_DEPTH_COMPONENT,GL_FLOAT, image.data);
 
-    cv::Mat image_flipped;
-    cv::flip(depth_image_, image_flipped, 0);
-   // cv::imwrite(filename.toStdString(), image_flipped);
+    resizeGL(640, 480);
+    std::vector<Vec3> vertex;
+    QVec4 pos4;
+    QVec3 pos3;
+    QVec3 vet;
+    float d01,d_1,z;
 
-    cv::Mat dddd;
-    depth_image_.convertTo(dddd, CV_8UC1, 255.0f);
-    cv::cvtColor(dddd,dddd,cv::COLOR_GRAY2BGR);
+    QMat4 view;
+    view.translate(offset_x_, offset_y_, offset_z_);
+    view.rotate(rotation_);
+
+    QMat4 K;
+    K.setToIdentity();
+    K(0,0)=camera_param_.fx;
+    K(0,2)=camera_param_.cx;
+    K(1,1)=camera_param_.fy;
+    K(1,2)=camera_param_.cy;
+    K(2,2)=1;
+
+
+    cv::Mat depth_image_flipped;
+    cv::flip(depth_image_, depth_image_flipped, 0);
+    cv::Mat color_image_flipped;
+    cv::flip(color_image_, color_image_flipped, 0);
 
     std::cout<<"data: ";
-    for(int i = 0;i<depth_image_.rows;i++){
-        float * data = depth_image_.ptr<float>(i);
-        for(int j = 0; j < depth_image_.cols; j++){
-            std::cout<<data[j]<<" ";
-        }
-        std::cout<<"\n";
-    }
+    for(int i = 0;i<depth_image_flipped.rows;i++){
+        float * color_data = color_image_flipped.ptr<float>(i);
+        float * depth_data = depth_image_flipped.ptr<float>(i);
+        for(int j = 0; j < depth_image_flipped.cols; j++){
+            if(depth_data[j]!=1.0f){
+//                depth_data[j] = (zfar_*znear_)/(znear_*depth_data[j]-zfar_*depth_data[j]+zfar_);
+//                depth_data[j] = (zfar_-znear_)*depth_data[j]+znear_;
+                d01 = depth_data[j];
+                z = (zfar_*znear_)/(znear_*d01-zfar_*d01+zfar_);
+                d_1 = (zfar_*z+znear_*+2*zfar_*znear_)/(zfar_*z-znear_*z);
 
-    cv::imshow("depth", image_flipped);
+                pos3 = K.inverted()*QVec3(j,i,1)*z;
+                pos4 = QVec4(pos3,1);//view.inverted() *
+
+//                pos4 = (projection_*view).inverted() * QVec4(i,j,d_1, -z);
+
+                vet = QVec3(pos4.x()/pos4.w(), pos4.y()/pos4.w(), pos4.z()/pos4.w());
+                vertex.push_back(ToEType(vet));
+                std::cout<<z<<" ";
+            }
+        }
+        std::cout<<std::endl;
+
+
+    }
+    FileUtil::WriteKeyPos("key.txt",vertex);
+    std::vector<Vec3> ori_vertices = hand_mesh_->positions_;
+    std::vector<Vec3> new_vertices;
+    for(auto & p : ori_vertices){
+        QVec4 pos = view * QVec4(p.x(),p.y(),p.z(),1);
+        p = Vec3(pos.x()/pos.w(), -pos.y()/pos.w(), -pos.z()/pos.w());
+        new_vertices.push_back(p);
+    }
+    FileUtil::WriteKeyPos("ori_in_camera.txt", new_vertices);
+//    std::cout<<image_flipped.rows<<" "<<image_flipped.cols<<std::endl;
+//    std::cout<<this->width()<<" "<<this->height()<<std::endl;
+
+//     cv::imwrite(filename.toStdString(), image_flipped);
+    cv::imshow("depth", depth_image_flipped);
 }
 
 void Panel::saveKeyPos(QString filename)

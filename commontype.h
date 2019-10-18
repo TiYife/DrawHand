@@ -10,11 +10,13 @@
 
 #define real_t float
 
+#define Vec4 Eigen::Vector4f
 #define Vec3 Eigen::Vector3f
 #define Vec2 Eigen::Vector2f
 #define Quat Eigen::Quaternionf
 #define Mat4 Eigen::Matrix4f
 
+#define QVec4 QVector4D
 #define QVec3 QVector3D
 #define QVec2 QVector2D
 #define QQuat QQuaternion
@@ -30,6 +32,14 @@ static QVec3 ToQType(const Vec3& e){
     q[1] = e[1];
     q[2] = e[2];
     return q;
+}
+
+static Vec3 ToEType(const QVec3& q){
+    Vec3 e;
+    e[0] = q[0];
+    e[1] = q[1];
+    e[2] = q[2];
+    return e;
 }
 
 static QVec2 ToQType(const Vec2& e){

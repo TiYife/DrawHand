@@ -92,7 +92,7 @@ bool MainWindow::saveFile(const QString &dir)
 {
     //panel->showDepthMap(0);
 //    panel->grab().save(dir + "color_" + filename_ + ".png");
-   // panel->saveColorImage(dir + "color_" + filename_ + ".png");
+    panel->saveColorImage(dir + "color_" + filename_ + ".png");
 
 //    panel->showDepthMap(true);
 //    panel->grab().scaled(640, 480).save(dir + "depth_" + filename_ + ".png");
