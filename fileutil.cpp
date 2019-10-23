@@ -214,6 +214,37 @@ void FileUtil::WriteKeyPos(const QString& filename, std::vector<Eigen::Vector3f>
     file.close();
 }
 
+void FileUtil::WriteHand(const QString& filename, Mesh *mesh)
+{
+    ofstream file;
+    file.open(QFileInfo(filename).absoluteFilePath().toStdString());
+    file << "\nmtllib mtl.mtl"<<"\n\n";
+    file << "g hand" <<"\n\n";
+    for(auto& p: mesh->positions_){
+        file << "v " << p.x() <<" " << p.y() <<" " << p.z() <<"\n";
+    }
+
+    for(auto& uv: mesh->texcoords_){
+        file << "vt " << uv.x() <<" " << uv.y() <<"\n";
+    }
+    file<<"\n";
+
+
+    for(auto& n: mesh->normals_){
+        file << "vn " << n.x() <<" " << n.y() <<" " << n.z() <<"\n";
+    }
+    file<<"\n";
+
+    file << "usemtl handMat\n";
+    for(auto& f: mesh->faces_){
+        file << "f " << f.v0 + 1 << "/" << f.v0 + 1 << "/" << f.v0 + 1 << " ";
+        file << f.v1 + 1<< "/" << f.v1 + 1<< "/" << f.v1 + 1 << " ";
+        file << f.v2 + 1<< "/" << f.v2 + 1<< "/" << f.v2 + 1<< "\n";
+    }
+
+    file.close();
+}
+
 string FileUtil::GetTime()
 {
     time_t now = time(0);

@@ -11,10 +11,9 @@ Panel::Panel(QWidget *parent) :
     scale_(0.01),
     offset_x_(0),
     offset_y_(0),
-    offset_z_(-1000),
+    offset_z_(-500),
     hand_mesh_(nullptr)
 {
-//    render = unique_ptr<Render>(new Render());
     this->grabKeyboard();
      makeCurrent();
      setFixedSize(640,480);
@@ -164,9 +163,6 @@ void Panel::resizeGL(int w, int h)
 
         projection_(3, 2) = -1.0f;
         projection_(3, 3) = 0.0f;
-
-    std::cout<<ToEType(projection_).transpose()<<std::endl;
-
 }
 
 void Panel::paintGL()
@@ -175,10 +171,9 @@ void Panel::paintGL()
     QMat4 matrix;
     matrix.translate(offset_x_, offset_y_, offset_z_);
     matrix.rotate(rotation_);
-    std::cout<<ToEType(matrix)<<std::endl;
-//    matrix.scale(scale_);
-
-    std::cout<<ToEType(matrix)<<std::endl;
+    //0.11712 -0.471955 -0.0500048 -0.872375
+    rotation_ = QQuaternion(-0.872375, 0.11712, -0.471955, -0.0500048);
+    std::cout<<rotation_.x()<<" "<<rotation_.y()<<" "<<rotation_.z()<<" "<<rotation_.scalar()<<std::endl;
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -286,92 +281,55 @@ void Panel::showDepthMap(bool depth_mode)
 
 void Panel::saveColorImage(QString filename)
 {
-//    cv::Mat color_image = cv::Mat(this->height(), this->width(), CV_8UC3, cv::Scalar(0));
-//    glReadPixels(0,0,this->width(),this->height(),GL_BGR,GL_UNSIGNED_BYTE, color_image.data);
 
     resizeGL(640, 480);
+    update();
 
     cv::Mat color_image_flipped;
     cv::flip(color_image_, color_image_flipped, 0);
-    cv::imshow("color", color_image_flipped);
-//    cv::imwrite(filename.toStdString(), color_image_flipped);
+//    cv::imshow("color", color_image_flipped);
+    cv::imwrite(filename.toStdString(), color_image_flipped);
 }
 
 void Panel::saveDepthImage(QString filename)
 {
-//    cv::Mat image = cv::Mat(this->height(), this->width(), CV_32FC1, cv::Scalar(0));
-//    glReadPixels(0,0,this->width(),this->height(),GL_DEPTH_COMPONENT,GL_FLOAT, image.data);
 
     resizeGL(640, 480);
-    std::vector<Vec3> vertex;
-    QVec4 pos4;
-    QVec3 pos3;
-    QVec3 vet;
-    float d01,d_1,z;
+    update();
 
-    QMat4 view;
-    view.translate(offset_x_, offset_y_, offset_z_);
-    view.rotate(rotation_);
-
-    QMat4 K;
-    K.setToIdentity();
-    K(0,0)=camera_param_.fx;
-    K(0,2)=camera_param_.cx;
-    K(1,1)=camera_param_.fy;
-    K(1,2)=camera_param_.cy;
-    K(2,2)=1;
-
-
-    cv::Mat depth_image_flipped;
+    cv::Mat depth_image_flipped = cv::Mat(this->height(), this->width(), CV_32FC1, cv::Scalar(0));;
     cv::flip(depth_image_, depth_image_flipped, 0);
-    cv::Mat color_image_flipped;
-    cv::flip(color_image_, color_image_flipped, 0);
 
     std::cout<<"data: ";
     for(int i = 0;i<depth_image_flipped.rows;i++){
-        float * color_data = color_image_flipped.ptr<float>(i);
         float * depth_data = depth_image_flipped.ptr<float>(i);
         for(int j = 0; j < depth_image_flipped.cols; j++){
             if(depth_data[j]!=1.0f){
-//                depth_data[j] = (zfar_*znear_)/(znear_*depth_data[j]-zfar_*depth_data[j]+zfar_);
-//                depth_data[j] = (zfar_-znear_)*depth_data[j]+znear_;
-                d01 = depth_data[j];
-                z = (zfar_*znear_)/(znear_*d01-zfar_*d01+zfar_);
-                d_1 = (zfar_*z+znear_*+2*zfar_*znear_)/(zfar_*z-znear_*z);
-
-                pos3 = K.inverted()*QVec3(j,i,1)*z;
-                pos4 = QVec4(pos3,1);//view.inverted() *
-
-//                pos4 = (projection_*view).inverted() * QVec4(i,j,d_1, -z);
-
-                vet = QVec3(pos4.x()/pos4.w(), pos4.y()/pos4.w(), pos4.z()/pos4.w());
-                vertex.push_back(ToEType(vet));
-                std::cout<<z<<" ";
+                depth_data[j] = (zfar_*znear_)/(znear_*depth_data[j]-zfar_*depth_data[j]+zfar_);
             }
+            else{
+                depth_data[j] = zfar_;
+            }
+//            std::cout<<depth_data[j]<<" ";
         }
-        std::cout<<std::endl;
-
-
+//        std::cout<<std::endl;
     }
-    FileUtil::WriteKeyPos("key.txt",vertex);
-    std::vector<Vec3> ori_vertices = hand_mesh_->positions_;
-    std::vector<Vec3> new_vertices;
-    for(auto & p : ori_vertices){
-        QVec4 pos = view * QVec4(p.x(),p.y(),p.z(),1);
-        p = Vec3(pos.x()/pos.w(), -pos.y()/pos.w(), -pos.z()/pos.w());
-        new_vertices.push_back(p);
-    }
-    FileUtil::WriteKeyPos("ori_in_camera.txt", new_vertices);
-//    std::cout<<image_flipped.rows<<" "<<image_flipped.cols<<std::endl;
-//    std::cout<<this->width()<<" "<<this->height()<<std::endl;
 
-//     cv::imwrite(filename.toStdString(), image_flipped);
-    cv::imshow("depth", depth_image_flipped);
+    cv::Mat depth_image_save = cv::Mat(this->height(), this->width(), CV_8UC4, depth_image_flipped.data);
+//    depth_image_save.convertTo(depth_image_save, CV_8UC4);
+//    cv::normalize(depth_image_save, depth_image_save, 0, 1.0, cv::NORM_MINMAX);
+
+    cv::imwrite(filename.toStdString(), depth_image_save);
+//    cv::imshow("32fc1", depth_image_flipped);
+//    cv::imshow("8uc3", depth_image_save);
+
 }
 
 void Panel::saveKeyPos(QString filename)
 {
     FileUtil::WriteKeyPos(filename, hand_key_pos_);
+    QFileInfo info(filename);
+    FileUtil::WriteHand("C:/CLAP/data/temp/" + info.baseName() + ".obj", hand_mesh_.get());
 }
 
 

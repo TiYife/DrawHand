@@ -90,17 +90,17 @@ bool MainWindow::saveAs()
 
 bool MainWindow::saveFile(const QString &dir)
 {
-    //panel->showDepthMap(0);
+    panel->showDepthMap(0);
 //    panel->grab().save(dir + "color_" + filename_ + ".png");
-    panel->saveColorImage(dir + "color_" + filename_ + ".png");
+//    panel->saveColorImage(dir + "color_" + filename_ + ".png");
 
 //    panel->showDepthMap(true);
 //    panel->grab().scaled(640, 480).save(dir + "depth_" + filename_ + ".png");
     panel->saveDepthImage(dir + "depth_" + filename_ + ".png");
 //    Sleep(5000);
-    panel->showDepthMap(false);
+//    panel->showDepthMap(false);
 
-    panel->saveKeyPos(dir + "key_points_" + filename_ +".txt");
+//    panel->saveKeyPos(dir + "key_points_" + filename_ +".txt");
     return true;
 }
 
@@ -144,13 +144,25 @@ void MainWindow::findKeyIndices()
 
     std::vector<int> indices = ori->FindLostIndices(mesh.get());
     for(auto & i: indices){
-        std::cout<<i<<std::endl;
+        std::cout<<i<<" ";
     }
+    std::cout<<std::endl;
+
 }
 
 void MainWindow::drawBall()
 {
-    panel->addMesh(MeshBuilders::CreateSphere(Vec3(0,0,0), 0.1));
+//    panel->addMesh(MeshBuilders::CreateSphere(Vec3(0,0,0), 0.1));
+    const QString filename = QFileDialog::getOpenFileName(this);
+    QFileInfo info(filename);
+    std::cout<<info.absoluteFilePath().toStdString()<<std::endl;
+
+    cv::Mat image = cv::imread(info.absoluteFilePath().toStdString(), cv::IMREAD_UNCHANGED);
+    cv::Mat change = cv::Mat(panel->height(), panel->width(), CV_32FC1, image.data);
+
+    cv::imshow("read_8uc3", image);
+    cv::imshow("read_32fc1", change);
+
 }
 
 void MainWindow::showDepthMap(bool checked)
@@ -384,7 +396,7 @@ void MainWindow::createActions()
         const QIcon ballIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
         QAction *drawAct = new QAction(ballIcon, tr("Cu&t"), this);
         drawAct->setShortcuts(QKeySequence::Cut);
-        drawAct->setStatusTip(tr("get joint indices"));
+        drawAct->setStatusTip(tr("draw ball"));
         connect(drawAct, &QAction::triggered, this, &MainWindow::drawBall);
         toolMenu->addAction(drawAct);
         toolToolBar->addAction(drawAct);

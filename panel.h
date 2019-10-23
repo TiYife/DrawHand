@@ -13,8 +13,8 @@
 struct CameraParam{
     float fx = 473.297f;
     float fy = fx;
-    float cx = 116.561f;
-    float cy = 145.293f;
+    float cx = 316.561f;
+    float cy = 245.293f;
 };
 
 
