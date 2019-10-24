@@ -5,5 +5,7 @@
         <file>resource/shaders/texture.frag</file>
         <file>resource/shaders/texture.vert</file>
         <file>resource/shaders/depth.frag</file>
+        <file>resource/shaders/mask.frag</file>
+        <file>resource/shaders/mask.vert</file>
     </qresource>
 </RCC>

@@ -21,14 +21,14 @@ public:
     virtual ~RenderMesh();
 
     virtual void update() = 0;
-    virtual void draw(QMat4 view, QMat4 projection, bool depth = 0) = 0;
+    virtual void draw(QMat4 view, QMat4 projection, bool mask = 0) = 0;
 
 
 protected:
     void initialize();
-    void DepthMode(bool depth_mode_);
+    void MaskMode(bool mask_mode_);
     virtual void initColorShader() = 0;
-    virtual void initDepthShader() = 0;
+    virtual void initMaskShader() = 0;
 
 protected:
     Mesh * mesh_;
@@ -50,8 +50,8 @@ public:
 
     virtual void update() override;
     virtual void initColorShader() override;
-    virtual void initDepthShader() override;
-    virtual void draw(QMat4 view, QMat4 projection, bool depth = 0) override;
+    virtual void initMaskShader() override;
+    virtual void draw(QMat4 view, QMat4 projection, bool mask = 0) override;
 
 private:
     unique_ptr<QOpenGLTexture> texture_;
@@ -67,8 +67,8 @@ public:
     virtual void update() override;
 
     virtual void initColorShader() override;
-    virtual void initDepthShader() override;
-    virtual void draw(QMat4 view, QMat4 projection, bool depth = 0) override;
+    virtual void initMaskShader() override;
+    virtual void draw(QMat4 view, QMat4 projection, bool mask = 0) override;
 
 private:
     QColor color_;

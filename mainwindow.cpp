@@ -93,7 +93,7 @@ bool MainWindow::saveAs()
 
 bool MainWindow::saveFile(const QString &dir)
 {
-    panel->showDepthMap(0);
+    panel->showMaskImage(0);
 //    panel->grab().save(dir + "color_" + filename_ + ".png");
     panel->saveColorImage(dir + "color_" + filename_ + ".png");
 
@@ -186,9 +186,9 @@ void MainWindow::drawBall()
     }
 }
 
-void MainWindow::showDepthMap(bool checked)
+void MainWindow::showMaskImage(bool checked)
 {
-    panel->showDepthMap(checked);
+    panel->showMaskImage(checked);
 }
 
 void MainWindow::showHand(bool checked)
@@ -318,15 +318,15 @@ void MainWindow::createActions()
         QMenu *viewMenu = menuBar()->addMenu(tr("&View"));
         QToolBar *viewToolBar = addToolBar(tr("View"));
 
-        const QIcon depthIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
-        QAction *depthAct = new QAction(depthIcon, tr("depth"), this);
-        depthAct->setShortcuts(QKeySequence::Cut);
-        depthAct->setStatusTip(tr("show depth"));
-        depthAct->setCheckable(true);
-        depthAct->setChecked(false);
-        connect(depthAct, &QAction::triggered, this, &MainWindow::showDepthMap);
-        viewMenu->addAction(depthAct);
-        viewToolBar->addAction(depthAct);
+        const QIcon maskIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));
+        QAction *maskAct = new QAction(maskIcon, tr("mask"), this);
+        maskAct->setShortcuts(QKeySequence::Cut);
+        maskAct->setStatusTip(tr("show mask"));
+        maskAct->setCheckable(true);
+        maskAct->setChecked(false);
+        connect(maskAct, &QAction::triggered, this, &MainWindow::showMaskImage);
+        viewMenu->addAction(maskAct);
+        viewToolBar->addAction(maskAct);
 
 
         const QIcon showhandIcon = QIcon::fromTheme("edit-cut", QIcon(":/images/cut.png"));

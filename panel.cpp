@@ -178,7 +178,7 @@ void Panel::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for(auto& it = mesh_map_.begin(); it != mesh_map_.end();it++){
-        it->second->draw(matrix, projection_, depth_);
+        it->second->draw(matrix, projection_, mask_);
     }
     glReadPixels(0,0,this->width(),this->height(),GL_BGR,GL_UNSIGNED_BYTE, color_image_.data);
     glReadPixels(0,0,this->width(),this->height(),GL_DEPTH_COMPONENT,GL_FLOAT, depth_image_.data);
@@ -269,12 +269,12 @@ void Panel::setMeshVisible(int id, bool show)
     update();
 }
 
-void Panel::showDepthMap(bool depth_mode)
+void Panel::showMaskImage(bool mask_mode)
 {
 //    for(auto& it = mesh_map_.begin(); it !=mesh_map_.end(); it++){
 //        it->second->DepthMode(depth_mode);
 //    }
-    depth_ = depth_mode;
+    mask_ = mask_mode;
     repaint();
 }
 

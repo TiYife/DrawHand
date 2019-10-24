@@ -10,5 +10,5 @@ void main()
     float diff = max(dot(norm, lightDir), 0.3);
 
 //    gl_FragColor = vec4(diff * objectColor, 1.0);
-    gl_FragColor = vec4(0.0,1.0,0.0, 1.0);
+    gl_FragColor = vec4(1.0,0.0,0.0, 1.0);
 }

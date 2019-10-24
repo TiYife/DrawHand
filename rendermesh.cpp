@@ -25,11 +25,11 @@ void RenderMesh::initialize()
     indexBuffer.allocate(&mesh_->faces_[0],static_cast<int>(mesh_->faces_.size() * sizeof(Face)));
 }
 
-void RenderMesh::DepthMode(bool depth_mode)
+void RenderMesh::MaskMode(bool mask_mode)
 {
     shader_.release();
-    if(depth_mode){
-        initDepthShader();
+    if(mask_mode){
+        initMaskShader();
     }
     else{
         initColorShader();
@@ -114,7 +114,7 @@ void TextureRenderMesh::initColorShader()
 }
 
 
-void TextureRenderMesh::initDepthShader()
+void TextureRenderMesh::initMaskShader()
 {
     shader_ = unique_ptr<QOpenGLShaderProgram>(new QOpenGLShaderProgram());
     if (!shader_->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/texture.vert"))
@@ -158,7 +158,7 @@ void TextureRenderMesh::update()
 
 void TextureRenderMesh::draw(QMatrix4x4 view, QMatrix4x4 projection, bool depth)
 {
-    DepthMode(depth);
+    MaskMode(depth);
     if (!shader_->bind())
         return;
 
@@ -232,7 +232,7 @@ void SimpleRenderMesh::initColorShader()
         return;
 }
 
-void SimpleRenderMesh::initDepthShader()
+void SimpleRenderMesh::initMaskShader()
 {
     shader_ = unique_ptr<QOpenGLShaderProgram>(new QOpenGLShaderProgram());
     if (!shader_->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/simple.vert"))
@@ -266,7 +266,7 @@ void SimpleRenderMesh::update()
 
 void SimpleRenderMesh::draw(QMatrix4x4 view, QMatrix4x4 projection, bool depth)
 {
-    DepthMode(depth);
+    MaskMode(depth);
 
     if (!shader_->bind())
         return;

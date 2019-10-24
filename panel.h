@@ -33,10 +33,11 @@ public:
     void setMeshVisible(int id, bool show);
     void reloadMeshes(QString path);
 
-    void showDepthMap(bool depth_mode);
+    void showMaskImage(bool mask_mode);
 
     void saveColorImage(QString filename);
     void saveDepthImage(QString filename);
+    void saveMaskImage(QString filename);
 
     void saveKeyPos(QString filename);
     void saveNewKeyPos(QString filename, std::vector<QVec3> points);
@@ -73,7 +74,7 @@ private:
     qreal offset_x_, offset_y_, offset_z_;
 
     bool press_{0};
-    bool depth_{0};
+    bool mask_{0};
 
 
     unique_ptr<Mesh> hand_mesh_;
@@ -86,6 +87,6 @@ private:
 
     GLuint colorbuffer, depthbuffer;
 
-    cv::Mat color_image_, depth_image_;
+    cv::Mat color_image_, depth_image_, mask_image_;
 };
 #endif // PANEL_H
