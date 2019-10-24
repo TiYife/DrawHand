@@ -119,7 +119,7 @@ void TextureRenderMesh::initMaskShader()
     shader_ = unique_ptr<QOpenGLShaderProgram>(new QOpenGLShaderProgram());
     if (!shader_->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/texture.vert"))
         return;
-    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/depth.frag"))
+    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/mask.frag"))
         return;
     if (!shader_->link())
         return;
@@ -145,7 +145,7 @@ void TextureRenderMesh::update()
     Vec2 texcoords = Vec2(0,0);
     for(size_t i = 0; i < mesh_->positions_.size();i++){
         position = mesh_->positions_[i];
-//        normal = mesh_->transform_ * mesh_->normals_[i];
+        //        normal = mesh_->transform_ * mesh_->normals_[i];
         texcoords = mesh_->texcoords_[i];
         p = QVec3(position.x(), position.y(), position.z());
         n = QVec3(normal.x(), normal.y(), normal.z());
@@ -156,9 +156,9 @@ void TextureRenderMesh::update()
 }
 
 
-void TextureRenderMesh::draw(QMatrix4x4 view, QMatrix4x4 projection, bool depth)
+void TextureRenderMesh::draw(QMatrix4x4 view, QMatrix4x4 projection, bool mask)
 {
-    MaskMode(depth);
+    MaskMode(mask);
     if (!shader_->bind())
         return;
 
@@ -179,7 +179,19 @@ void TextureRenderMesh::draw(QMatrix4x4 view, QMatrix4x4 projection, bool depth)
     shader_->setUniformValue("model", model);
     shader_->setUniformValue("view", view);
     shader_->setUniformValue("projection", projection);
-    shader_->setUniformValue("texture", 0);//todo ? 0
+    if(!mask){
+        shader_->setUniformValue("texture", 0);//todo ? 0
+    }
+    else {
+        if(mesh_->GetName() == "hand"){
+            std::cout<<mesh_->GetName();
+
+            shader_->setUniformValue("objectColor", QVec4(1.f,0,0,1.f));//todo ? 0
+        }
+        else{
+            shader_->setUniformValue("objectColor", QVec4(0,0,1.f,1.f));//todo ? 0
+        }
+    }
 
     arrayBuffer.bind();
     indexBuffer.bind();
@@ -237,7 +249,7 @@ void SimpleRenderMesh::initMaskShader()
     shader_ = unique_ptr<QOpenGLShaderProgram>(new QOpenGLShaderProgram());
     if (!shader_->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/simple.vert"))
         return;
-    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/depth.frag"))
+    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/mask.frag"))
         return;
     if (!shader_->link())
         return;
@@ -256,7 +268,7 @@ void SimpleRenderMesh::update()
     for(size_t i = 0; i < mesh_->positions_.size();i++){
         position = mesh_->positions_[i];
         normal = mesh_->normals_[i];
-//        texcoords = mesh_->texcoords_[i];
+        //        texcoords = mesh_->texcoords_[i];
         p = QVec3(position.x(), position.y(), position.z());
         n = QVec3(normal.x(), normal.y(), normal.z());
         t = QVec2(texcoords.x(), texcoords.y());
@@ -274,8 +286,8 @@ void SimpleRenderMesh::draw(QMatrix4x4 view, QMatrix4x4 projection, bool depth)
     if(!mesh_->IsVisible())
         return;
 
-//    if(mesh_->IsChanged())
-//        update();
+    //    if(mesh_->IsChanged())
+    //        update();
 
     Transform t = mesh_->GetTransform();
     QMat4 model = t.toQMat4();
@@ -283,7 +295,7 @@ void SimpleRenderMesh::draw(QMatrix4x4 view, QMatrix4x4 projection, bool depth)
     shader_->setUniformValue("model", model);
     shader_->setUniformValue("view", view);
     shader_->setUniformValue("projection", projection);
-    shader_->setUniformValue("objectColor", color_);
+    shader_->setUniformValue("objectColor", QVec4(0.f, 1.f, 0.f, 1.f));
 
 
     arrayBuffer.bind();
@@ -304,8 +316,9 @@ void SimpleRenderMesh::draw(QMatrix4x4 view, QMatrix4x4 projection, bool depth)
     shader_ -> enableAttributeArray(texcoord_location);
     shader_ -> setAttributeBuffer(texcoord_location, GL_FLOAT, offset, 2, sizeof(RenderVertex));
 
-//    glPolygonMode(GL_BACK, GL_LINE);
-//    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //    glPolygonMode(GL_BACK, GL_LINE);
+    //    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mesh_->faces_.size() * sizeof(Face)), GL_UNSIGNED_INT, 0);
+
     shader_->release();
 }
