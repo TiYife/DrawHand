@@ -204,6 +204,29 @@ vector<vector<int>> FileUtil::LoadKeyIndices(QString filename)
     return ans;
 }
 
+vector<QVector3D> FileUtil::LoadKeyPoints(QString filename)
+{
+    vector<QVec3> ans;
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadOnly|QIODevice::Text)){
+        return ans;
+    }
+    float a, b, c;
+    while(!file.atEnd()){
+        vector<int> indices;
+        QByteArray line = file.readLine();
+        QString str(line);
+        QStringList list = str.split(" ");
+
+        a = list[0].toFloat();
+        b = list[1].toFloat();
+        c = list[2].toFloat();
+
+        ans.push_back(QVec3(a, b, c));
+    }
+    return ans;
+}
+
 void FileUtil::WriteKeyPos(const QString& filename, std::vector<Eigen::Vector3f>& pos)
 {
     ofstream file;
@@ -213,6 +236,17 @@ void FileUtil::WriteKeyPos(const QString& filename, std::vector<Eigen::Vector3f>
     }
     file.close();
 }
+
+void FileUtil::WriteKeyPos(const QString &filename, std::vector<QVector3D> &pos)
+{
+    ofstream file;
+    file.open(QFileInfo(filename).absoluteFilePath().toStdString());
+    for(auto& p : pos){
+        file << p.x() <<" " << p.y() <<" " << p.z() <<"\n";
+    }
+    file.close();
+}
+
 
 void FileUtil::WriteHand(const QString& filename, Mesh *mesh)
 {

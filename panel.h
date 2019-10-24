@@ -39,6 +39,7 @@ public:
     void saveDepthImage(QString filename);
 
     void saveKeyPos(QString filename);
+    void saveNewKeyPos(QString filename, std::vector<QVec3> points);
 protected:
     void mousePressEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;

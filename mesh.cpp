@@ -120,6 +120,20 @@ void Mesh::SetChanged(bool changed)
     changed_ = changed;
 }
 
+void Mesh::Scale(real_t x, real_t y, real_t z)
+{
+    for(auto& p:positions_ ){
+        p[0] *= x;
+        p[1] *= y;
+        p[2] *= z;
+    }
+}
+
+void Mesh::Scale(float scale)
+{
+    Scale(scale, scale, scale);
+}
+
 const Transform& Mesh::GetTransform()
 {
     return transform_;

@@ -45,6 +45,9 @@ public:
     void SetVisible(bool visible);
     void SetChanged(bool changed);
 
+    void Scale(real_t x, real_t y, real_t z);
+    void Scale(real_t scale);
+
     const std::string &GetName();
     const std::string &GetMtl();
     const std::string &GetMtlFilePath();

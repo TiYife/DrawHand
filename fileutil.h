@@ -26,9 +26,14 @@ public:
 
     static vector<vector<int>> LoadKeyIndices(QString filename);
 
+    static vector<QVec3> LoadKeyPoints(QString filename);
+
 
 
     static void WriteKeyPos(const QString& filename, std::vector<Vec3>& pos);
+
+    static void WriteKeyPos(const QString& filename, std::vector<QVec3>& pos);
+
 
     static void  WriteHand(const QString& filename,Mesh *mesh);
 

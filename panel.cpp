@@ -192,6 +192,7 @@ void Panel::initMeshes()
     setHandMesh(FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/hand.obj", "hand"));
 
     auto ball = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/ball.obj", "ball");
+    ball->Scale(2.f/3.f);
     mesh_map_[ball.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(ball.get(), QString(":/resource/images/ballD.bmp")));
     meshes_.push_back(std::move(ball));
 
@@ -211,7 +212,7 @@ void Panel::initMeshes()
     meshes_.push_back(std::move(torus));
 
     auto cube2 = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/cube2.obj", "cube2");
-    mesh_map_[cube2.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(cube2.get(), QString(":/resource/images/cube2D.bmp")));
+    mesh_map_[cube2.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(cube2.get(), QString(":/resource/images/cubeD.bmp")));
     cube2->SetVisible(false);
     meshes_.push_back(std::move(cube2));
 }
@@ -225,7 +226,7 @@ void Panel::reloadMeshes(QString path)
 
     hand_mesh_->Update(vertex, normal);
     for(int i = 0; i < 5 ; i++ ){
-        meshes_[i]->Update(list[i]);
+        meshes_[i]->Update(list[0]);
     }
     updateAuxiliaryMeshes();
 }
@@ -327,9 +328,40 @@ void Panel::saveDepthImage(QString filename)
 
 void Panel::saveKeyPos(QString filename)
 {
-    FileUtil::WriteKeyPos(filename, hand_key_pos_);
-    QFileInfo info(filename);
-    FileUtil::WriteHand("C:/CLAP/data/temp/" + info.baseName() + ".obj", hand_mesh_.get());
+    QMat4 view;
+    view.translate(offset_x_, offset_y_, offset_z_);
+    view.rotate(rotation_);
+    //0.11712 -0.471955 -0.0500048 -0.872375
+    rotation_ = QQuaternion(-0.872375, 0.11712, -0.471955, -0.0500048);
+
+    std::vector<QVec3> points;
+    QVec3 point;
+    for(auto& p : hand_key_pos_){
+        point = ToQType(p);
+        point = view * point;
+        point.setY(-1.f * point.y());
+        point.setZ(-1.f * point.z());
+        points.push_back(point);
+    }
+    FileUtil::WriteKeyPos(filename, points);
+//    QFileInfo info(filename);
+//    FileUtil::WriteHand("C:/CLAP/data/temp/" + info.baseName() + ".obj", hand_mesh_.get());
+}
+
+void Panel::saveNewKeyPos(QString filename, std::vector<QVec3> points)
+{
+    QMat4 view;
+    view.translate(offset_x_, offset_y_, offset_z_);
+    view.rotate(rotation_);
+    //0.11712 -0.471955 -0.0500048 -0.872375
+    rotation_ = QQuaternion(-0.872375, 0.11712, -0.471955, -0.0500048);
+
+    for(auto & p: points){
+        p = view * p;
+        p.setY(-1.f * p.y());
+        p.setZ(-1.f * p.z());
+    }
+    FileUtil::WriteKeyPos(filename, points);
 }
 
 

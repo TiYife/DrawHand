@@ -51,7 +51,10 @@ void MainWindow::batch()
     const QStringList filelist = QFileDialog::getOpenFileNames(this,tr("文件选择"),tr("/home"),
                                                                tr("文本文件(* txt)"));
 
-    QString savepath = kBasePath + QString::fromStdString(FileUtil::GetTime()) + "/";
+    if(filelist.empty())return;
+    QString savepath = QFileInfo(filelist[0]).absoluteDir().absolutePath() + "data/";
+
+//    QString savepath = kBasePath + QString::fromStdString(FileUtil::GetTime()) + "/";
     QDir dir(savepath);
     if(!dir.exists())
         dir.mkdir(savepath);
@@ -92,7 +95,7 @@ bool MainWindow::saveFile(const QString &dir)
 {
     panel->showDepthMap(0);
 //    panel->grab().save(dir + "color_" + filename_ + ".png");
-//    panel->saveColorImage(dir + "color_" + filename_ + ".png");
+    panel->saveColorImage(dir + "color_" + filename_ + ".png");
 
 //    panel->showDepthMap(true);
 //    panel->grab().scaled(640, 480).save(dir + "depth_" + filename_ + ".png");
@@ -100,7 +103,7 @@ bool MainWindow::saveFile(const QString &dir)
 //    Sleep(5000);
 //    panel->showDepthMap(false);
 
-//    panel->saveKeyPos(dir + "key_points_" + filename_ +".txt");
+    panel->saveKeyPos(dir + "key_points_" + filename_ +".txt");
     return true;
 }
 
@@ -153,16 +156,34 @@ void MainWindow::findKeyIndices()
 void MainWindow::drawBall()
 {
 //    panel->addMesh(MeshBuilders::CreateSphere(Vec3(0,0,0), 0.1));
-    const QString filename = QFileDialog::getOpenFileName(this);
-    QFileInfo info(filename);
-    std::cout<<info.absoluteFilePath().toStdString()<<std::endl;
+//    const QString filename = QFileDialog::getOpenFileName(this);
+//    QFileInfo info(filename);
+//    std::cout<<info.absoluteFilePath().toStdString()<<std::endl;
 
-    cv::Mat image = cv::imread(info.absoluteFilePath().toStdString(), cv::IMREAD_UNCHANGED);
-    cv::Mat change = cv::Mat(panel->height(), panel->width(), CV_32FC1, image.data);
+//    cv::Mat image = cv::imread(info.absoluteFilePath().toStdString(), cv::IMREAD_UNCHANGED);
+//    cv::Mat change = cv::Mat(panel->height(), panel->width(), CV_32FC1, image.data);
 
-    cv::imshow("read_8uc3", image);
-    cv::imshow("read_32fc1", change);
+//    cv::imshow("read_8uc3", image);
+//    cv::imshow("read_32fc1", change);
 
+    const QStringList filelist = QFileDialog::getOpenFileNames(this,tr("文件选择"),tr("/home"),
+                                                               tr("文本文件(* txt)"));
+
+    QString savepath;
+    QString saveDir;
+    QString filepath = filelist[0];
+    QFileInfo dirInfo(filepath);
+    saveDir = dirInfo.absoluteDir().absolutePath();
+
+    for(auto& path: filelist){
+        QFileInfo info(path);
+
+        savepath = saveDir + "/new/" + info.baseName() + ".txt";
+        std::cout<<savepath.toStdString()<<std::endl;
+        std::vector<QVec3> points = FileUtil::LoadKeyPoints(path);
+        panel->saveNewKeyPos(savepath, points);
+
+    }
 }
 
 void MainWindow::showDepthMap(bool checked)
@@ -192,12 +213,12 @@ void MainWindow::showBanana(bool checked)
 
 void MainWindow::showCube2(bool checked)
 {
-    panel -> setMeshVisible(3, checked);
+    panel -> setMeshVisible(4, checked);
 }
 
 void MainWindow::showTorus(bool checked)
 {
-    panel -> setMeshVisible(4, checked);
+    panel -> setMeshVisible(3, checked);
 }
 
 void MainWindow::showAuxiliary(bool checked)
