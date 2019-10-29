@@ -52,7 +52,7 @@ void MainWindow::batch()
                                                                tr("文本文件(* txt)"));
 
     if(filelist.empty())return;
-    QString savepath = QFileInfo(filelist[0]).absoluteDir().absolutePath() + "data/";
+    QString savepath = QFileInfo(filelist[0]).absoluteDir().absolutePath() + "-data/";
 
 //    QString savepath = kBasePath + QString::fromStdString(FileUtil::GetTime()) + "/";
     QDir dir(savepath);
@@ -63,7 +63,9 @@ void MainWindow::batch()
             if (!fileName.isEmpty())
                 panel -> reloadMeshes(fileName);
             QFileInfo info = QFileInfo(fileName);
-            filename_ = info.baseName();
+//            filename_ = info.baseName();
+            filename_ = QString("%1").arg(info.baseName().toInt(), 4, 10, QLatin1Char('0'));
+
             saveFile(savepath);
         }
     }
@@ -94,14 +96,13 @@ bool MainWindow::saveAs()
 bool MainWindow::saveFile(const QString &dir)
 {
     panel->showMaskImage(0);
-//    panel->grab().save(dir + "color_" + filename_ + ".png");
     panel->saveColorImage(dir + "color_" + filename_ + ".png");
-
-//    panel->showDepthMap(true);
-//    panel->grab().scaled(640, 480).save(dir + "depth_" + filename_ + ".png");
     panel->saveDepthImage(dir + "depth_" + filename_ + ".png");
-//    Sleep(5000);
-//    panel->showDepthMap(false);
+
+    panel->showMaskImage(true);
+    panel->saveColorImage(dir + "mask_" + filename_ + ".png");
+
+    panel->showMaskImage(0);
 
     panel->saveKeyPos(dir + "key_points_" + filename_ +".txt");
     return true;

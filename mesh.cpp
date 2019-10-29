@@ -234,7 +234,7 @@ void Mesh::CalculateNormal()
     Vec3 dir10,dir20;
     Vec3 norm;
 
-    for(int i = 0;i < faces_.size()/3;i++ ){
+    for(int i = 0;i < faces_.size();i++ ){
         pos[0] = positions_[faces_[i].v0];
         pos[1] = positions_[faces_[i].v1];
         pos[2] = positions_[faces_[i].v2];
@@ -242,8 +242,8 @@ void Mesh::CalculateNormal()
         dir10 = pos[1] - pos[0];
         dir20 = pos[2] - pos[0];
 
-        norm = dir20.cross(dir10);
-//        std::cout<<"norm:\t"<<norm.x<<"\t"<<norm.y<<"\t"<<norm.z<<"\n";
+        norm = dir10.cross(dir20);
+        std::cout<<"norm:\t"<<norm.x()<<"\t"<<norm.y()<<"\t"<<norm.z()<<"\n";
 
         for (int j = 0; j < 3; j++) {
             // weight by angle to fix the L-Shape problem
@@ -251,6 +251,7 @@ void Mesh::CalculateNormal()
             if (weight <= 0.0f) {
                 weight = 0.0001f;
             }
+//            weight = 1/3.f;
 //            std::cout<<"weight_"<<faces_[3*i+j]<<":\t"<<weight<<"\t";
             if(j == 0)
                 normals_[faces_[i].v0] += norm * weight;
@@ -259,7 +260,7 @@ void Mesh::CalculateNormal()
             else
                 normals_[faces_[i].v2] += norm * weight;
         }
-//        std::cout<<"\n";
+        std::cout<<"\n";
     }
 }
 

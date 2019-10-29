@@ -172,8 +172,8 @@ void Panel::paintGL()
     matrix.translate(offset_x_, offset_y_, offset_z_);
     matrix.rotate(rotation_);
     //0.11712 -0.471955 -0.0500048 -0.872375
-    rotation_ = QQuaternion(-0.872375, 0.11712, -0.471955, -0.0500048);
-    std::cout<<rotation_.x()<<" "<<rotation_.y()<<" "<<rotation_.z()<<" "<<rotation_.scalar()<<std::endl;
+//    rotation_ = QQuaternion(-0.872375, 0.11712, -0.471955, -0.0500048);
+//    std::cout<<rotation_.x()<<" "<<rotation_.y()<<" "<<rotation_.z()<<" "<<rotation_.scalar()<<std::endl;
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -192,7 +192,7 @@ void Panel::initMeshes()
     setHandMesh(FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/hand.obj", "hand"));
 
     auto ball = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/ball.obj", "ball");
-    ball->Scale(2.f/3.f);
+    ball->Scale(4.f/3.f);
     mesh_map_[ball.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(ball.get(), QString(":/resource/images/ballD.bmp")));
     meshes_.push_back(std::move(ball));
 
@@ -225,8 +225,10 @@ void Panel::reloadMeshes(QString path)
     FileUtil::LoadTransfroms(path.toStdString(), vertex, normal, list);
 
     hand_mesh_->Update(vertex, normal);
+    hand_mesh_->CalculateNormal();
     for(int i = 0; i < 5 ; i++ ){
         meshes_[i]->Update(list[0]);
+        meshes_[i]->CalculateNormal();
     }
     updateAuxiliaryMeshes();
 }
@@ -301,7 +303,7 @@ void Panel::saveDepthImage(QString filename)
     cv::Mat depth_image_flipped = cv::Mat(this->height(), this->width(), CV_32FC1, cv::Scalar(0));;
     cv::flip(depth_image_, depth_image_flipped, 0);
 
-    std::cout<<"data: ";
+//    std::cout<<"data: ";
     for(int i = 0;i<depth_image_flipped.rows;i++){
         float * depth_data = depth_image_flipped.ptr<float>(i);
         for(int j = 0; j < depth_image_flipped.cols; j++){

@@ -137,14 +137,16 @@ void TextureRenderMesh::update()
 {
     if(!mesh_)
         return;
+//    mesh_->CalculateNormal();
     vertices_.resize(mesh_->positions_.size());
     QVec3 p,n;
     QVec2 t;
     Vec3 position;
-    Vec3 normal = Vec3(0,0,0);
+    Vec3 normal = Vec3(0,0,1);
     Vec2 texcoords = Vec2(0,0);
     for(size_t i = 0; i < mesh_->positions_.size();i++){
         position = mesh_->positions_[i];
+        normal = mesh_->normals_[i];
         //        normal = mesh_->transform_ * mesh_->normals_[i];
         texcoords = mesh_->texcoords_[i];
         p = QVec3(position.x(), position.y(), position.z());
@@ -259,7 +261,7 @@ void SimpleRenderMesh::update()
 {
     if(!mesh_)
         return;
-    mesh_->CalculateNormal();
+//    mesh_->CalculateNormal();
     QVec3 p,n;
     QVec2 t;
     Vec3 position;
