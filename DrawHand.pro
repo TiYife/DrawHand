@@ -41,7 +41,18 @@ SOURCES += \
     fileutil.cpp \
     mesh.cpp \
     meshbuilders.cpp \
-    render.cpp
+    render.cpp \
+    dynamicmesh.cpp \
+    fileutil.cpp \
+    glwidget.cpp \
+    main.cpp \
+    mainwindow.cpp \
+    mesh.cpp \
+    meshbuilders.cpp \
+    panel.cpp \
+    render.cpp \
+    rendermesh.cpp \
+    window.cpp
 
 HEADERS += \
     rendermesh.h \
@@ -60,7 +71,19 @@ HEADERS += \
     meshbuilders.h \
     transform.h \
     commontype.h \
-    render.h
+    render.h \
+    commontype.h \
+    dynamicmesh.h \
+    fileutil.h \
+    glwidget.h \
+    mainwindow.h \
+    mesh.h \
+    meshbuilders.h \
+    panel.h \
+    render.h \
+    rendermesh.h \
+    transform.h \
+    window.h
 
 FORMS += \
         mainwindow.ui
@@ -68,7 +91,8 @@ FORMS += \
 RESOURCES += \
     textures.qrc \
     shaders.qrc \
-    objs.qrc
+    objs.qrc \
+    joints.qrc
 
 INCLUDEPATH += D:/DevelopTools/eigen3 \
     D:/DevelopTools/opencv/build/include

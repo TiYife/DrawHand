@@ -11,7 +11,7 @@ Panel::Panel(QWidget *parent) :
     scale_(0.01),
     offset_x_(0),
     offset_y_(0),
-    offset_z_(-500),
+    offset_z_(-600),
     hand_mesh_(nullptr)
 {
     this->grabKeyboard();
@@ -280,6 +280,40 @@ void Panel::showMaskImage(bool mask_mode)
     repaint();
 }
 
+void Panel::changeRotation(int no)
+{
+    QVec3 axis;
+    qreal angular;
+    switch (no) {
+    case 0:
+        break;
+    case 1:
+        axis = QVec3(0,1,0);
+        angular = 180;
+        break;
+    case 2:
+        axis = QVec3(0,1,0);
+        angular = 90;
+        break;
+    case 3:
+        axis = QVec3(0,1,0);
+        angular = 270;
+        break;
+    case 4:
+        axis = QVec3(1,0,0);
+        angular = 90;
+        break;
+    case 5:
+        axis = QVec3(1,0,0);
+        angular = 270;
+        break;
+    default:
+        break;
+    }
+    rotation_ = QQuaternion::fromAxisAndAngle(axis, angular);
+    update();
+}
+
 
 
 void Panel::saveColorImage(QString filename)
@@ -303,7 +337,6 @@ void Panel::saveDepthImage(QString filename)
     cv::Mat depth_image_flipped = cv::Mat(this->height(), this->width(), CV_32FC1, cv::Scalar(0));;
     cv::flip(depth_image_, depth_image_flipped, 0);
 
-//    std::cout<<"data: ";
     for(int i = 0;i<depth_image_flipped.rows;i++){
         float * depth_data = depth_image_flipped.ptr<float>(i);
         for(int j = 0; j < depth_image_flipped.cols; j++){
@@ -333,8 +366,6 @@ void Panel::saveKeyPos(QString filename)
     QMat4 view;
     view.translate(offset_x_, offset_y_, offset_z_);
     view.rotate(rotation_);
-    //0.11712 -0.471955 -0.0500048 -0.872375
-    rotation_ = QQuaternion(-0.872375, 0.11712, -0.471955, -0.0500048);
 
     std::vector<QVec3> points;
     QVec3 point;

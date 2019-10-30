@@ -47,9 +47,6 @@ private slots:
     void showCube2(bool checked);
     void showTorus(bool checked);
     void showAuxiliary(bool checked);
-
-
-
 private:
     enum { MaxRecentFiles = 5 };
 

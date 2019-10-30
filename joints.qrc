@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resource/key-points/hand_key_indicex-10.18.txt</file>
+    </qresource>
+</RCC>

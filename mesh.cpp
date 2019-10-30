@@ -243,7 +243,7 @@ void Mesh::CalculateNormal()
         dir20 = pos[2] - pos[0];
 
         norm = dir10.cross(dir20);
-        std::cout<<"norm:\t"<<norm.x()<<"\t"<<norm.y()<<"\t"<<norm.z()<<"\n";
+//        std::cout<<"norm:\t"<<norm.x()<<"\t"<<norm.y()<<"\t"<<norm.z()<<"\n";
 
         for (int j = 0; j < 3; j++) {
             // weight by angle to fix the L-Shape problem
@@ -260,7 +260,7 @@ void Mesh::CalculateNormal()
             else
                 normals_[faces_[i].v2] += norm * weight;
         }
-        std::cout<<"\n";
+//        std::cout<<"\n";
     }
 }
 

@@ -186,7 +186,7 @@ void TextureRenderMesh::draw(QMatrix4x4 view, QMatrix4x4 projection, bool mask)
     }
     else {
         if(mesh_->GetName() == "hand"){
-            std::cout<<mesh_->GetName();
+//            std::cout<<mesh_->GetName();
 
             shader_->setUniformValue("objectColor", QVec4(1.f,0,0,1.f));//todo ? 0
         }
@@ -269,7 +269,7 @@ void SimpleRenderMesh::update()
     Vec2 texcoords = Vec2(0,0);
     for(size_t i = 0; i < mesh_->positions_.size();i++){
         position = mesh_->positions_[i];
-        normal = mesh_->normals_[i];
+        //normal = mesh_->normals_[i];
         //        texcoords = mesh_->texcoords_[i];
         p = QVec3(position.x(), position.y(), position.z());
         n = QVec3(normal.x(), normal.y(), normal.z());

@@ -35,6 +35,8 @@ public:
 
     void showMaskImage(bool mask_mode);
 
+    void changeRotation(int no);
+
     void saveColorImage(QString filename);
     void saveDepthImage(QString filename);
     void saveMaskImage(QString filename);
