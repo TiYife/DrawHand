@@ -41,16 +41,12 @@ SOURCES += \
     fileutil.cpp \
     mesh.cpp \
     meshbuilders.cpp \
-    render.cpp \
-    dynamicmesh.cpp \
     fileutil.cpp \
-    glwidget.cpp \
     main.cpp \
     mainwindow.cpp \
     mesh.cpp \
     meshbuilders.cpp \
     panel.cpp \
-    render.cpp \
     rendermesh.cpp \
     window.cpp
 
@@ -71,16 +67,12 @@ HEADERS += \
     meshbuilders.h \
     transform.h \
     commontype.h \
-    render.h \
     commontype.h \
-    dynamicmesh.h \
     fileutil.h \
-    glwidget.h \
     mainwindow.h \
     mesh.h \
     meshbuilders.h \
     panel.h \
-    render.h \
     rendermesh.h \
     transform.h \
     window.h

@@ -192,7 +192,7 @@ void Panel::initMeshes()
     setHandMesh(FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/hand.obj", "hand"));
 
     auto ball = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/ball.obj", "ball");
-    ball->Scale(4.f/3.f);
+//    ball->Scale(2.f/3.f);
     mesh_map_[ball.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(ball.get(), QString(":/resource/images/ballD.bmp")));
     meshes_.push_back(std::move(ball));
 
@@ -227,7 +227,7 @@ void Panel::reloadMeshes(QString path)
     hand_mesh_->Update(vertex, normal);
     hand_mesh_->CalculateNormal();
     for(int i = 0; i < 5 ; i++ ){
-        meshes_[i]->Update(list[0]);
+        meshes_[i]->Update(list[1]);
         meshes_[i]->CalculateNormal();
     }
     updateAuxiliaryMeshes();
@@ -326,6 +326,7 @@ void Panel::saveColorImage(QString filename)
     cv::flip(color_image_, color_image_flipped, 0);
 //    cv::imshow("color", color_image_flipped);
     cv::imwrite(filename.toStdString(), color_image_flipped);
+    color_image_flipped.release();
 }
 
 void Panel::saveDepthImage(QString filename)
@@ -356,6 +357,8 @@ void Panel::saveDepthImage(QString filename)
 //    cv::normalize(depth_image_save, depth_image_save, 0, 1.0, cv::NORM_MINMAX);
 
     cv::imwrite(filename.toStdString(), depth_image_save);
+    depth_image_save.release();
+    depth_image_flipped.release();
 //    cv::imshow("32fc1", depth_image_flipped);
 //    cv::imshow("8uc3", depth_image_save);
 

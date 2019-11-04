@@ -59,7 +59,7 @@ void MainWindow::batch()
     if(!dir.exists())
         dir.mkdir(savepath);
 
-    for(int i = 0; i < 6; i++){
+    for(int i = 3; i < 4; i++){
         panel->changeRotation(i);
         QString path = savepath;
         switch (i) {
@@ -204,24 +204,115 @@ void MainWindow::drawBall()
     //    cv::imshow("read_8uc3", image);
     //    cv::imshow("read_32fc1", change);
 
-    const QStringList filelist = QFileDialog::getOpenFileNames(this,tr("文件选择"),tr("/home"),
-                                                               tr("文本文件(* txt)"));
+//    const QStringList filelist = QFileDialog::getOpenFileNames(this,tr("文件选择"),tr("/home"),
+//                                                               tr("文本文件(* txt)"));
 
-    QString savepath;
-    QString saveDir;
-    QString filepath = filelist[0];
-    QFileInfo dirInfo(filepath);
-    saveDir = dirInfo.absoluteDir().absolutePath();
+//    QString savepath;
+//    QString saveDir;
+//    QString filepath = filelist[0];
+//    QFileInfo dirInfo(filepath);
+//    saveDir = dirInfo.absoluteDir().absolutePath();
 
-    for(auto& path: filelist){
-        QFileInfo info(path);
+//    for(auto& path: filelist){
+//        QFileInfo info(path);
 
-        savepath = saveDir + "/new/" + info.baseName() + ".txt";
-        std::cout<<savepath.toStdString()<<std::endl;
-        std::vector<QVec3> points = FileUtil::LoadKeyPoints(path);
-        panel->saveNewKeyPos(savepath, points);
+//        savepath = saveDir + "/new/" + info.baseName() + ".txt";
+//        std::cout<<savepath.toStdString()<<std::endl;
+//        std::vector<QVec3> points = FileUtil::LoadKeyPoints(path);
+//        panel->saveNewKeyPos(savepath, points);
 
+//    }
+
+    int begin = 0;
+    int end = 0;
+    int base = 0;
+
+    QDialog dialog(this);
+    QFormLayout form(&dialog);
+
+    panel->releaseKeyboard();
+    // Value0
+    QString label = QString("base: ");
+    QLineEdit *box = new QLineEdit(&dialog);
+    form.addRow(label, box);
+    // Value1
+    QString label1 = QString("begin: ");
+    QLineEdit *box1 = new QLineEdit(&dialog);
+    form.addRow(label1, box1);
+    // Value2
+    QString label2 = QString("end: ");
+    QLineEdit *box2 = new QLineEdit(&dialog);
+    form.addRow(label2, box2);
+    // Add Cancel and OK button
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+        Qt::Horizontal, &dialog);
+    form.addRow(&buttonBox);
+    QObject::connect(&buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
+    QObject::connect(&buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
+
+    // Process when OK button is clicked
+    if (dialog.exec() == QDialog::Accepted) {
+        base = box->text().toInt();
+        begin = box1->text().toInt() + base;
+        end = box2->text().toInt() + base;
     }
+
+    const QString dirName = QFileDialog::getExistingDirectory(this);
+    if (!dirName.isEmpty()){
+        for(int i = 0; i < 6; i++){
+            QString path = dirName;
+
+            switch (i) {
+            case 0:
+                path += "/front/";
+                break;
+            case 1:
+                path += "/back/";
+                break;
+            case 2:
+                path += "/left/";
+                break;
+            case 3:
+                path += "/right/";
+                break;
+            case 4:
+                path += "/top/";
+                break;
+            case 5:
+                path += "/bottom/";
+                break;
+            default:
+                break;
+            }
+            QString filename;
+            for(int id = begin; id <= end; id++){
+                filename = path + "color_" + QString("%1").arg(id, 4, 10, QLatin1Char('0')) + ".png";
+                QFile file(filename);
+                if(file.exists())
+                    file.remove();
+                std::cout<<"deleting file : " + filename.toStdString()<<std::endl;
+
+                filename = path + "depth_" + QString("%1").arg(id, 4, 10, QLatin1Char('0')) + ".png";
+                QFile file1(filename);
+                if(file1.exists())
+                    file1.remove();
+                std::cout<<"deleting file : " + filename.toStdString()<<std::endl;
+
+                filename = path + "mask_" + QString("%1").arg(id, 4, 10, QLatin1Char('0')) + ".png";
+                QFile file2(filename);
+                if(file2.exists())
+                    file2.remove();
+                std::cout<<"deleting file : " + filename.toStdString()<<std::endl;
+
+                filename = path + "key_points_" + QString("%1").arg(id, 4, 10, QLatin1Char('0')) + ".txt";
+                QFile file3(filename);
+                if(file3.exists())
+                    file3.remove();
+                std::cout<<"deleting file : " + filename.toStdString()<<std::endl;
+            }
+        }
+    }
+    panel->grabKeyboard();
 }
 
 void MainWindow::showMaskImage(bool checked)
