@@ -36,6 +36,8 @@ protected:
     QOpenGLBuffer arrayBuffer;
     QOpenGLBuffer indexBuffer;
     unique_ptr<QOpenGLShaderProgram> shader_;
+    QOpenGLShaderProgram *mask_shader_ = nullptr;
+    QOpenGLShaderProgram *color_shader_ = nullptr;
 };
 
 

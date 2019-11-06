@@ -18,5 +18,8 @@
         <file>resource/images/bananaD.bmp</file>
         <file>resource/images/cube2D.bmp</file>
         <file>resource/images/cubeD.bmp</file>
+        <file>resource/images/appleD.bmp</file>
+        <file>resource/images/labelD.bmp</file>
+        <file>resource/images/steelD.bmp</file>
     </qresource>
 </RCC>

@@ -60,6 +60,7 @@ private:
     void prependToRecentFiles(const QString &fileName);
     void setRecentFilesVisible(bool visible);
     bool saveFile(const QString &dir);
+    bool saveFile2(const QString &dir);
     void setCurrentFile(const QString &fileName);
     static QString strippedName(const QString &fullFileName);
     MainWindow *findMainWindow(const QString &fileName) const;

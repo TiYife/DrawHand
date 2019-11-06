@@ -59,7 +59,7 @@ void MainWindow::batch()
     if(!dir.exists())
         dir.mkdir(savepath);
 
-    for(int i = 3; i < 4; i++){
+    for(int i = 0; i < 6; i++){
         panel->changeRotation(i);
         QString path = savepath;
         switch (i) {
@@ -101,6 +101,16 @@ void MainWindow::batch()
 
                 saveFile(path);
             }
+
+            for(auto& fileName : filelist){
+                if (!fileName.isEmpty())
+                    panel -> reloadMeshes(fileName);
+                QFileInfo info = QFileInfo(fileName);
+                //            filename_ = info.baseName();
+                filename_ = QString("%1").arg(info.baseName().toInt(), 4, 10, QLatin1Char('0'));
+
+                saveFile2(path);
+            }
         }
     }
 }
@@ -134,15 +144,24 @@ bool MainWindow::saveFile(const QString &path)
     panel->saveColorImage(path + "color_" + filename_ + ".png");
     panel->saveDepthImage(path + "depth_" + filename_ + ".png");
 
-    panel->showMaskImage(true);
-    panel->saveColorImage(path + "mask_" + filename_ + ".png");
+//    panel->showMaskImage(1);
+//    panel->update();
+//    panel->saveColorImage(path + "mask_" + filename_ + ".png");
 
-    panel->showMaskImage(0);
+//    panel->showMaskImage(0);
 
     panel->saveKeyPos(path + "key_points_" + filename_ +".txt");
 
 
     return true;
+}
+
+bool MainWindow::saveFile2(const QString &path)
+{
+        panel->showMaskImage(1);
+        panel->update();
+        panel->saveColorImage(path + "mask_" + filename_ + ".png");
+        return true;
 }
 
 void MainWindow::about()

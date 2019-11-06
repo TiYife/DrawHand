@@ -196,20 +196,20 @@ void Panel::initMeshes()
     mesh_map_[ball.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(ball.get(), QString(":/resource/images/ballD.bmp")));
     meshes_.push_back(std::move(ball));
 
-    auto cube = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/cube.obj", "cube");
-    mesh_map_[cube.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(cube.get(), QString(":/resource/images/cubeD.bmp")));
-    cube->SetVisible(false);
-    meshes_.push_back(std::move(cube));
+    auto apple = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/apple1.2.obj", "apple");
+    mesh_map_[apple.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(apple.get(), QString(":/resource/images/appleD.bmp")));
+    apple->SetVisible(false);
+    meshes_.push_back(std::move(apple));
 
-    auto banana = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/banana.obj", "banana");
-    mesh_map_[banana.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(banana.get(), QString(":/resource/images/bananaD.bmp")));
-    banana->SetVisible(false);
-    meshes_.push_back(std::move(banana));
+    auto label = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/label.obj", "label");
+    mesh_map_[label.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(label.get(), QString(":/resource/images/labelD.bmp")));
+    label->SetVisible(false);
+    meshes_.push_back(std::move(label));
 
-    auto torus = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/torus.obj", "torus");
-    mesh_map_[torus.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(torus.get(), QString(":/resource/images/torusD.bmp")));
-    torus->SetVisible(false);
-    meshes_.push_back(std::move(torus));
+    auto steel = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/steel.obj", "steel");
+    mesh_map_[steel.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(steel.get(), QString(":/resource/images/steelD.bmp")));
+    steel->SetVisible(false);
+    meshes_.push_back(std::move(steel));
 
     auto cube2 = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/cube2.obj", "cube2");
     mesh_map_[cube2.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(cube2.get(), QString(":/resource/images/cubeD.bmp")));
@@ -227,7 +227,7 @@ void Panel::reloadMeshes(QString path)
     hand_mesh_->Update(vertex, normal);
     hand_mesh_->CalculateNormal();
     for(int i = 0; i < 5 ; i++ ){
-        meshes_[i]->Update(list[1]);
+        meshes_[i]->Update(list[0]);
         meshes_[i]->CalculateNormal();
     }
     updateAuxiliaryMeshes();

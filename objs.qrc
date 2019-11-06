@@ -6,5 +6,7 @@
         <file>resource/ori-objs/hand.obj</file>
         <file>resource/ori-objs/mtl.mtl</file>
         <file>resource/ori-objs/torus.obj</file>
+        <file>resource/ori-objs/apple.obj</file>
+        <file>resource/ori-objs/apple1.2.obj</file>
     </qresource>
 </RCC>

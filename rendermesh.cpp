@@ -104,25 +104,34 @@ TextureRenderMesh::~TextureRenderMesh()
 
 void TextureRenderMesh::initColorShader()
 {
-    shader_ = unique_ptr<QOpenGLShaderProgram>(new QOpenGLShaderProgram());
-    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/texture.vert"))
-        return;
-    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/texture.frag"))
-        return;
-    if (!shader_->link())
-        return;
+    if(!color_shader_)
+    {
+        color_shader_ = new QOpenGLShaderProgram();
+        if (!color_shader_->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/texture.vert"))
+            return;
+        if (!color_shader_->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/texture.frag"))
+            return;
+        if (!color_shader_->link())
+            return;
+    }
+
+    shader_ = unique_ptr<QOpenGLShaderProgram>(color_shader_);
+
 }
 
 
 void TextureRenderMesh::initMaskShader()
 {
-    shader_ = unique_ptr<QOpenGLShaderProgram>(new QOpenGLShaderProgram());
-    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/texture.vert"))
-        return;
-    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/mask.frag"))
-        return;
-    if (!shader_->link())
-        return;
+    if(!mask_shader_){
+        mask_shader_ = new QOpenGLShaderProgram();
+        if (!mask_shader_->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/texture.vert"))
+            return;
+        if (!mask_shader_->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/mask.frag"))
+            return;
+        if (!mask_shader_->link())
+            return;
+    }
+    shader_ = unique_ptr<QOpenGLShaderProgram>(mask_shader_);
 }
 
 void TextureRenderMesh::initTexture(QString textrue_path)
@@ -237,24 +246,32 @@ SimpleRenderMesh::~SimpleRenderMesh()
 
 void SimpleRenderMesh::initColorShader()
 {
-    shader_ = unique_ptr<QOpenGLShaderProgram>(new QOpenGLShaderProgram());
-    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/simple.vert"))
-        return;
-    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/simple.frag"))
-        return;
-    if (!shader_->link())
-        return;
+    if(!color_shader_){
+        color_shader_ = new QOpenGLShaderProgram();
+        if (!color_shader_->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/simple.vert"))
+            return;
+        if (!color_shader_->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/simple.frag"))
+            return;
+        if (!color_shader_->link())
+            return;
+    }
+
+    shader_ = unique_ptr<QOpenGLShaderProgram>(color_shader_);
 }
 
 void SimpleRenderMesh::initMaskShader()
 {
-    shader_ = unique_ptr<QOpenGLShaderProgram>(new QOpenGLShaderProgram());
-    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/simple.vert"))
-        return;
-    if (!shader_->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/mask.frag"))
-        return;
-    if (!shader_->link())
-        return;
+    if(!mask_shader_){
+        mask_shader_ = new QOpenGLShaderProgram();
+        if (!mask_shader_->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/resource/shaders/simple.vert"))
+            return;
+        if (!mask_shader_->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/resource/shaders/mask.frag"))
+            return;
+        if (!mask_shader_->link())
+            return;
+    }
+    shader_ = unique_ptr<QOpenGLShaderProgram>(mask_shader_);
+
 }
 
 void SimpleRenderMesh::update()
