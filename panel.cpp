@@ -16,8 +16,10 @@ Panel::Panel(QWidget *parent) :
 {
     this->grabKeyboard();
      makeCurrent();
-     setFixedSize(640,480);
-     resizeGL(640, 480);
+     int width = 640;
+     int height = 480;
+     setFixedSize(width,height);
+     resizeGL(width, height);
      depth_image_ = cv::Mat(this->height(), this->width(), CV_32FC1, cv::Scalar(0));
      color_image_ = cv::Mat(this->height(), this->width(), CV_8UC3, cv::Scalar(0));
 }
@@ -191,10 +193,10 @@ void Panel::initMeshes()
 
     setHandMesh(FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/hand.obj", "hand"));
 
-    auto ball = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/ball.obj", "ball");
-//    ball->Scale(2.f/3.f);
-    mesh_map_[ball.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(ball.get(), QString(":/resource/images/ballD.bmp")));
-    meshes_.push_back(std::move(ball));
+    auto abricot = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/abricot.obj", "abricot");
+//    abricot->Scale(2.f/3.f);
+    mesh_map_[abricot.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(abricot.get(), QString(":/resource/images/abricotD.bmp")));
+    meshes_.push_back(std::move(abricot));
 
     auto apple = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/apple1.2.obj", "apple");
     mesh_map_[apple.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(apple.get(), QString(":/resource/images/appleD.bmp")));
@@ -207,14 +209,14 @@ void Panel::initMeshes()
     meshes_.push_back(std::move(label));
 
     auto steel = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/steel.obj", "steel");
-    mesh_map_[steel.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(steel.get(), QString(":/resource/images/steelD.bmp")));
+    mesh_map_[steel.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(steel.get(), QString(":/resource/images/steelD100.bmp")));
     steel->SetVisible(false);
     meshes_.push_back(std::move(steel));
 
-    auto cube2 = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/cube2.obj", "cube2");
-    mesh_map_[cube2.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(cube2.get(), QString(":/resource/images/cubeD.bmp")));
-    cube2->SetVisible(false);
-    meshes_.push_back(std::move(cube2));
+    auto banana = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/banana.obj", "banana");
+    mesh_map_[banana.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(banana.get(), QString(":/resource/images/bananaD248.bmp")));
+    banana->SetVisible(false);
+    meshes_.push_back(std::move(banana));
 }
 
 void Panel::reloadMeshes(QString path)

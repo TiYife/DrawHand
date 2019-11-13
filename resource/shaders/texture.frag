@@ -38,6 +38,7 @@ void main()
 
 //    gl_FragColor = ( Emissive + Ambient + Diffuse + Specular ) * texture2D( texture, v_texcoord );
     gl_FragColor = ( Ambient + Diffuse ) * texture2D( texture, v_texcoord );
+//        gl_FragColor =texture2D( texture, v_texcoord );
 
 }
 
