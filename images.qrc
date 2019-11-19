@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resource/images/coverD.bmp</file>
+        <file>resource/images/leatherD.bmp</file>
+        <file>resource/images/paperD.bmp</file>
+    </qresource>
+</RCC>

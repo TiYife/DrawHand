@@ -5,11 +5,11 @@ varying vec4 v_normal;
 varying vec2 v_texcoord;
 varying vec4 v_eyepos;   // Eye position in world space.
 
-vec4 light_color = vec4(0.3f, 0.3f, 0.3f, 1.0f);
+vec4 light_color = vec4(1.f, 1.f, 1.f, 1.0f);
 vec4 light_pos = vec4(-1000.f, 0, 0, 1.f);
 
 vec4 material_emissive = vec4(0);
-vec4 material_diffuse = vec4(1);
+vec4 material_diffuse = vec4(0.3f, 0.3f, 0.3f, 1.0f);
 vec4 material_specular = vec4(1);
 float material_shininess = 50.f;
 

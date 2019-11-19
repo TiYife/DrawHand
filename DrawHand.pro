@@ -82,10 +82,10 @@ FORMS += \
         mainwindow.ui
 
 RESOURCES += \
-    textures.qrc \
     shaders.qrc \
     objs.qrc \
-    joints.qrc
+    joints.qrc \
+    textures.qrc
 
 INCLUDEPATH += D:/DevelopTools/eigen3 \
     D:/DevelopTools/opencv/build/include

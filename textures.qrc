@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>resource/images/cube.png</file>
         <file>resource/images/handD.bmp</file>
         <file>resource/images/ballD.bmp</file>
         <file>resource/images/copy.png</file>
@@ -9,13 +8,14 @@
         <file>resource/images/open.png</file>
         <file>resource/images/paste.png</file>
         <file>resource/images/save.png</file>
-        <file>resource/images/cube2D.bmp</file>
-        <file>resource/images/cubeD.bmp</file>
         <file>resource/images/appleD.bmp</file>
-        <file>resource/images/labelD.bmp</file>
-        <file>resource/images/steelD100.bmp</file>
         <file>resource/images/bananaD248.bmp</file>
-        <file>resource/images/tubeD.bmp</file>
         <file>resource/images/abricotD.bmp</file>
+        <file>resource/images/bunnyD.bmp</file>
+        <file>resource/images/coverD.bmp</file>
+        <file>resource/images/leatherD.bmp</file>
+        <file>resource/images/paperD.bmp</file>
+        <file>resource/images/pearD.bmp</file>
+        <file>resource/images/orangeD.bmp</file>
     </qresource>
 </RCC>

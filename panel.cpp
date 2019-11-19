@@ -193,30 +193,30 @@ void Panel::initMeshes()
 
     setHandMesh(FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/hand.obj", "hand"));
 
-    auto abricot = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/abricot.obj", "abricot");
-//    abricot->Scale(2.f/3.f);
-    mesh_map_[abricot.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(abricot.get(), QString(":/resource/images/abricotD.bmp")));
-    meshes_.push_back(std::move(abricot));
+    auto cover = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/cover.obj", "cover");
+//    cover->Scale(2.f/3.f);
+    mesh_map_[cover.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(cover.get(), QString(":/resource/images/coverD.bmp")));
+    meshes_.push_back(std::move(cover));
 
-    auto apple = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/apple1.2.obj", "apple");
-    mesh_map_[apple.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(apple.get(), QString(":/resource/images/appleD.bmp")));
-    apple->SetVisible(false);
-    meshes_.push_back(std::move(apple));
+    auto paper = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/paper.obj", "paper");
+    mesh_map_[paper.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(paper.get(), QString(":/resource/images/paperD.bmp")));
+    paper->SetVisible(false);
+    meshes_.push_back(std::move(paper));
 
-    auto label = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/label.obj", "label");
-    mesh_map_[label.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(label.get(), QString(":/resource/images/labelD.bmp")));
-    label->SetVisible(false);
-    meshes_.push_back(std::move(label));
+    auto leather = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/leather.obj", "leather");
+    mesh_map_[leather.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(leather.get(), QString(":/resource/images/leatherD.bmp")));
+    leather->SetVisible(false);
+    meshes_.push_back(std::move(leather));
 
-    auto steel = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/steel.obj", "steel");
-    mesh_map_[steel.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(steel.get(), QString(":/resource/images/steelD100.bmp")));
-    steel->SetVisible(false);
-    meshes_.push_back(std::move(steel));
+    auto pear = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/pear.obj", "pear");
+    mesh_map_[pear.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(pear.get(), QString(":/resource/images/pearD.bmp")));
+    pear->SetVisible(false);
+    meshes_.push_back(std::move(pear));
 
-    auto banana = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/banana.obj", "banana");
-    mesh_map_[banana.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(banana.get(), QString(":/resource/images/bananaD248.bmp")));
-    banana->SetVisible(false);
-    meshes_.push_back(std::move(banana));
+    auto orange = FileUtil::LoadObj("D:/Documents/Projects/QT/DrawHand/resource/ori-objs/orange.obj", "orange");
+    mesh_map_[orange.get()] = unique_ptr<RenderMesh>(new TextureRenderMesh(orange.get(), QString(":/resource/images/orangeD.bmp")));
+    orange->SetVisible(false);
+    meshes_.push_back(std::move(orange));
 }
 
 void Panel::reloadMeshes(QString path)
@@ -313,6 +313,10 @@ void Panel::changeRotation(int no)
         break;
     }
     rotation_ = QQuaternion::fromAxisAndAngle(axis, angular);
+    if(no == 5){
+        auto r2 = QQuaternion::fromAxisAndAngle(QVec3(0,1,0), 180);
+        rotation_ *= r2;
+    }
     update();
 }
 
